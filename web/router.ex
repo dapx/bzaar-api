@@ -9,8 +9,19 @@ defmodule Bzaar.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :browser_session do
+    plug Guardian.Plug.VerifySession # looks in the session for the token
+    plug Guardian.Plug.LoadResource
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
+  end
+
+  pipeline :secured do
+    plug Guardian.Plug.EnsureAuthenticated
   end
 
   scope "/", Bzaar do
@@ -20,7 +31,15 @@ defmodule Bzaar.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", Bzaar do
-  #   pipe_through :api
-  # end
+  scope "/bzaar/api", Bzaar do
+    pipe_through :api
+    post "/signup", UserController, :create
+    post "/signin", SessionController, :signin
+    
+    scope "/stores" do
+      pipe_through :secured
+      post "/", StoreController, :create
+      get "/:id", StoreController, :show
+    end
+  end
 end

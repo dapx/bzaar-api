@@ -17,6 +17,16 @@ config :bzaar, Bzaar.Endpoint,
   pubsub: [name: Bzaar.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
+# Configures JWT
+config :guardian, Guardian,
+  allowed_algos: ["HS512"],
+  verify_module: Guardian.JWT,
+  issuer: "Bzaar",
+  ttl: { 3, :days},
+  verify_issuer: true,
+  secret_key: "Y8uWXtGcg3vwlQ+uCAGK67JhdtaSYAkqu/tNNkaecwuQzYLMIRDiXqk86Dg2MnbJ",
+  serializer: Bzaar.GuardianSerializer
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

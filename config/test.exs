@@ -11,9 +11,9 @@ config :logger, level: :warn
 
 # Configure your database
 config :bzaar, Bzaar.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  adapter: Ecto.Adapters.MySQL,
+  username: "root",
+  password: "220Volts",
   database: "bzaar_test",
-  hostname: "localhost",
+  hostname: "127.0.0.1",
   pool: Ecto.Adapters.SQL.Sandbox
