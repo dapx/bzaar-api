@@ -1,4 +1,5 @@
 # Bzaar
+![bzaar-logo](bzaar.png)
 
 To start your Phoenix app:
 
