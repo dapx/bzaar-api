@@ -15,14 +15,12 @@ defmodule Bzaar.StoreControllerTest do
     conn = TestHelpers.api_sign_in(conn, store_user)
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
-@comment """
+
   test "lists all entries on index", %{conn: conn} do
-    store_user = TestHelpers.insert_user
-    conn = TestHelpers.api_sign_in(conn, store_user)
     conn = get conn, store_path(conn, :index)
     assert json_response(conn, 200)["data"] == []
   end
-"""
+
   test "shows chosen resource", %{conn: conn} do
     store = Repo.insert! %Store{}
     conn = get conn, store_path(conn, :show, store)

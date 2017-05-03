@@ -40,6 +40,7 @@ defmodule Bzaar.Router do
       pipe_through :secured
       post "/", StoreController, :create
       get "/:id", StoreController, :show
+      get "/", StoreController, :index
     end
   end
 end
