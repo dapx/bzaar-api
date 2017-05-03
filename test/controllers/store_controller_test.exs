@@ -11,6 +11,8 @@ defmodule Bzaar.StoreControllerTest do
   @invalid_attrs %{}
 
   setup %{conn: conn} do
+    store_user = TestHelpers.insert_user
+    conn = TestHelpers.api_sign_in(conn, store_user)
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 @comment """
@@ -22,8 +24,6 @@ defmodule Bzaar.StoreControllerTest do
   end
 """
   test "shows chosen resource", %{conn: conn} do
-    store_user = TestHelpers.insert_user
-    conn = TestHelpers.api_sign_in(conn, store_user)
     store = Repo.insert! %Store{}
     conn = get conn, store_path(conn, :show, store)
     assert json_response(conn, 200)["data"] == %{"id" => store.id,
@@ -36,24 +36,18 @@ defmodule Bzaar.StoreControllerTest do
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
-    store_user = TestHelpers.insert_user
-    conn = TestHelpers.api_sign_in(conn, store_user)
     assert_error_sent 404, fn ->
       get conn, store_path(conn, :show, -1)
     end
   end
 
   test "creates and renders resource when data is valid", %{conn: conn} do
-    store_user = TestHelpers.insert_user
-    conn = TestHelpers.api_sign_in(conn, store_user)
     conn = post conn, store_path(conn, :create), store: @valid_attrs
     assert json_response(conn, 201)["data"]["id"]
     assert Repo.get_by(Store, @valid_attrs)
   end
 
   test "does not create resource and renders errors when data is invalid", %{conn: conn} do
-    store_user = TestHelpers.insert_user
-    conn = TestHelpers.api_sign_in(conn, store_user)
     conn = post conn, store_path(conn, :create), store: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
