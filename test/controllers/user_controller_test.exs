@@ -22,7 +22,8 @@ defmodule Bzaar.UserControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-@comment """ Not implemented yet
+@comment """
+ Not implemented yet
   test "updates and renders chosen resource when data is valid", %{conn: conn} do
     user = Repo.insert! %User{}
     conn = put conn, user_path(conn, :update, user), user: @valid_attrs
