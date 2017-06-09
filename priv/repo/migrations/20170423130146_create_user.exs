@@ -9,6 +9,7 @@ defmodule Bzaar.Repo.Migrations.CreateUser do
       add :active, :boolean, default: false, null: false
       add :image, :string
       add :password_hash, :string
+      add :shopkeeper, :boolean, default: false, null: false
 
       timestamps()
     end

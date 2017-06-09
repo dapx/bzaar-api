@@ -8,6 +8,8 @@ defmodule Bzaar.Store do
     field :active, :boolean, default: false
     field :logo, :string, default: "http://icons.iconarchive.com/icons/iconsmind/outline/512/Clothing-Store-icon.png"
     belongs_to :user, Bzaar.User
+    has_many :products, Bzaar.Product
+    has_many :dispatchers, Bzaar.Dispatcher
 
     timestamps()
   end
