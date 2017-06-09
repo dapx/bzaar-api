@@ -15,7 +15,7 @@ defmodule Bzaar.ProductController do
       {:ok, product} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", store_product_path(conn, :show, product))
+        #|> put_resp_header("location", store_product_path(conn, :show, product))
         |> render("show.json", product: product)
       {:error, changeset} ->
         conn
