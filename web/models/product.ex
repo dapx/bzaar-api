@@ -18,7 +18,7 @@ defmodule Bzaar.Product do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :description, :price, :quantity, :size])
-    |> validate_required([:name, :description, :price, :quantity, :size])
+    |> cast(params, [:name, :description, :price, :quantity, :size, :store_id])
+    |> validate_required([:name, :description, :price, :quantity, :size, :store_id])
   end
 end

@@ -2,6 +2,23 @@ defmodule Bzaar.ProductController do
   use Bzaar.Web, :controller
 
   alias Bzaar.Product
+  alias Bzaar.Store
+  import Ecto.Query
+
+  plug :validate_nested_resource when action in [:create, :edit]
+
+  def validate_nested_resource(conn, _) do
+    user = Guardian.Plug.current_resource(conn)
+    store_id = conn.params["store_id"]
+    store = Repo.one(from s in Store, where: s.id == ^store_id and s.user_id == ^user.id)
+
+    case store do
+      %Store{} -> conn
+      _ -> conn
+        |> put_status(403)
+        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+    end
+  end
 
   def index(conn, _params) do
     products = Repo.all(Product)
@@ -9,7 +26,8 @@ defmodule Bzaar.ProductController do
   end
 
   def create(conn, %{"product" => product_params}) do
-    changeset = Product.changeset(%Product{}, product_params)
+    product = Map.put(product_params, "store_id", conn.params["store_id"])
+    changeset = Product.changeset(%Product{}, product)
 
     case Repo.insert(changeset) do
       {:ok, product} ->
