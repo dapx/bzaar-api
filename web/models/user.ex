@@ -3,7 +3,7 @@ defmodule Bzaar.User do
   alias Bzaar.{Repo, User}
 
   #https://github.com/elixir-ecto/ecto/issues/840
-  @derive {Poison.Encoder, only: [:id, :name, :email, :status]}
+  @derive {Poison.Encoder, only: [:id, :name, :email, :active]}
 
   schema "users" do
     field :name, :string
@@ -14,6 +14,7 @@ defmodule Bzaar.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     has_many :stores, Bzaar.Store
+    has_one :credit_card, Bzaar.CreditCard
 
     timestamps()
   end

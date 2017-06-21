@@ -31,16 +31,28 @@ defmodule Bzaar.Router do
   end
 
   # Other scopes may use custom stacks.
-  scope "/bzaar/api", Bzaar do
+  scope "/bzaar", Bzaar do
     pipe_through :api
-    post "/signup", UserController, :create
-    post "/signin", SessionController, :signin
-    
-    scope "/stores" do
-      pipe_through :secured
-      post "/", StoreController, :create
-      get "/:id", StoreController, :show
-      get "/", StoreController, :index
+
+    scope "/auth" do
+      post "/signup", UserController, :create
+      post "/signin", SessionController, :signin
     end
+    
+    scope "/secured" do
+      pipe_through :secured
+
+      resources "/stores", StoreController, except: [:delete] do
+
+        resources "/products", ProductController, except: [:delete], name: "product" do
+          resources "/product_images", ProductImageController, except: [:delete], name: "image"
+        end
+
+        resources "/dispatchers", DispatcherController, except: [:delete], name: "dispatcher"
+      end
+
+      resources "/credit_cards", CreditCardController, except: [:delete]
+    end
+
   end
 end
