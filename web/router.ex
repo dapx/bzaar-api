@@ -44,11 +44,11 @@ defmodule Bzaar.Router do
 
       resources "/stores", StoreController, except: [:delete] do
 
-        resources "/products", ProductController, except: [:delete], name: "product" do
-          resources "/product_images", ProductImageController, except: [:delete], name: "image"
+        resources "/products", ProductController, except: [:delete] do
+          resources "/product_images", ProductImageController, except: [:delete]
         end
 
-        resources "/dispatchers", DispatcherController, except: [:delete], name: "dispatcher"
+        resources "/dispatchers", DispatcherController, except: [:delete]
       end
 
       resources "/credit_cards", CreditCardController, except: [:delete]
