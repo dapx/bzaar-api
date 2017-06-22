@@ -21,7 +21,8 @@ defmodule Bzaar.ProductController do
   end
 
   def index(conn, _params) do
-    products = Repo.all(Product)
+    store_id = conn.params["store_id"]
+    products = Repo.all(from p in Product, where: p.store_id == ^store_id)
     render(conn, "index.json", products: products)
   end
 
