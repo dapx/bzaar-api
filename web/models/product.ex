@@ -7,6 +7,7 @@ defmodule Bzaar.Product do
     field :price, :float
     field :quantity, :integer
     field :size, :string
+    field :image, :string
     belongs_to :store, Bzaar.Store
     has_many :product_images, Bzaar.ProductImage
 
@@ -18,7 +19,7 @@ defmodule Bzaar.Product do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :description, :price, :quantity, :size, :store_id])
-    |> validate_required([:name, :description, :price, :quantity, :size, :store_id])
+    |> cast(params, [:name, :description, :price, :quantity, :size, :store_id, :image])
+    |> validate_required([:name, :description, :price, :quantity, :size, :store_id, :image])
   end
 end

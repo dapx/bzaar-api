@@ -8,6 +8,7 @@ defmodule Bzaar.Repo.Migrations.CreateProduct do
       add :price, :float
       add :quantity, :integer
       add :size, :string
+      add :image, :string
       add :store_id, references(:stores, on_delete: :nothing)
 
       timestamps()
