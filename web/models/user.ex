@@ -14,6 +14,7 @@ defmodule Bzaar.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     has_many :stores, Bzaar.Store
+    has_many :item_cart, Bzaar.ItemCart
     has_one :credit_card, Bzaar.CreditCard
 
     timestamps()

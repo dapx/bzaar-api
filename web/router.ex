@@ -53,6 +53,7 @@ defmodule Bzaar.Router do
 
       resources "/credit_cards", CreditCardController, except: [:delete]
       resources "/products", ProductController, only: [:index, :show]
+      resources "/item_cart", ItemCartController, except: [:delete]
     end
 
   end
