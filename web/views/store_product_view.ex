@@ -17,6 +17,7 @@ defmodule Bzaar.StoreProductView do
       quantity: product.quantity,
       size: product.size,
       image: product.image,
+      images: product.product_images,
       store_id: product.store_id}
   end
 end
