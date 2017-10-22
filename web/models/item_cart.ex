@@ -16,7 +16,7 @@ defmodule Bzaar.ItemCart do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:quantity, :status, :user_id, :product_id])
-    |> unique_constraint(:user_product)
+    |> unique_constraint(:user_product, name: :user_product_index)
     |> validate_required([:quantity, :status, :user_id, :product_id])
   end
 end

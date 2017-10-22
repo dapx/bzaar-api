@@ -22,13 +22,15 @@ defmodule Bzaar.ItemCartView do
     }
   end
 
-    def render("item.json", %{item_cart: item_cart}) do
+  def render("item.json", %{item_cart: item_cart}) do
     %{id: item_cart.id,
       user_id: item_cart.user_id,
       product_id: item_cart.product_id,
       quantity: item_cart.quantity,
       status: item_cart.status,
-      product_name: item_cart.product.name
+      product_name: item_cart.product.name,
+      product_price: item_cart.product.price,
+      product_image: item_cart.product.image
     }
   end
 end
