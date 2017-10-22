@@ -3,7 +3,7 @@ defmodule Bzaar.User do
   alias Bzaar.{Repo, User}
 
   #https://github.com/elixir-ecto/ecto/issues/840
-  @derive {Poison.Encoder, only: [:id, :name, :email, :active]}
+  @derive {Poison.Encoder, only: [:id, :name, :surname, :email, :active]}
 
   schema "users" do
     field :name, :string
