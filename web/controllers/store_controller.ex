@@ -8,6 +8,14 @@ defmodule Bzaar.StoreController do
     render(conn, "index.json", stores: stores)
   end
 
+  def list(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+    store_id = conn.params["store_id"]
+    stores = Repo.all(from s in Store,
+      where: s.user_id == ^user.id)
+    render(conn, "index.json", stores: stores)
+  end
+
   def create(conn, %{"store" => store_params}) do
     #user = Repo.get(Bzaar.User, user_id)
     user = Guardian.Plug.current_resource(conn)

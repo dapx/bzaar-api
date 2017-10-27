@@ -50,7 +50,8 @@ defmodule Bzaar.Router do
 
         resources "/dispatchers", DispatcherController, except: [:delete]
       end
-
+      
+      get "/my_stores", StoreController, :list
       resources "/credit_cards", CreditCardController, except: [:delete]
       resources "/products", ProductController, only: [:index, :show]
       resources "/item_cart", ItemCartController
