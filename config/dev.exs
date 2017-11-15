@@ -41,3 +41,8 @@ config :bzaar, Bzaar.Repo,
   database: "bzaar_dev",
   hostname: "127.0.0.1",
   pool_size: 10
+
+config :facebook,
+  graph_url: "https://graph.facebook.com",
+  app_id: System.get_env("FACEBOOK_APP_ID"),
+  appsecret: System.get_env("FACEBOOK_APP_SECRET")

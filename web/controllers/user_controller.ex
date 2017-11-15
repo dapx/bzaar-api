@@ -2,6 +2,7 @@ defmodule Bzaar.UserController do
   use Bzaar.Web, :controller
 
   alias Bzaar.User
+  import Facebook
 
   def index(conn, _params) do
     users = Repo.all(User)
@@ -20,6 +21,35 @@ defmodule Bzaar.UserController do
         conn
         |> put_status(:unprocessable_entity)
         |> render(Bzaar.ChangesetView, "error.json", changeset: changeset)
+    end
+  end
+
+  def create_facebook(conn, %{"access_token" => access_token}) do
+    case Facebook.me("id,first_name,last_name,email,age_range,verified", access_token) do
+      {:ok, facebook_user} ->
+        new_params = %{
+          facebook_id: facebook_user["id"],
+          name: facebook_user["first_name"],
+          surname: facebook_user["last_name"],
+          email: facebook_user["email"],
+          active: facebook_user["verified"],
+          password: :crypto.strong_rand_bytes(32) |> Base.encode64 |> binary_part(0, 32)
+        }
+        changeset = User.facebook_changeset(%User{}, new_params)
+        case Repo.insert(changeset) do
+          {:ok, user} ->
+            conn
+            |> put_status(:created)
+            |> render("show.json", user: user)
+          {:error, changeset} ->
+            conn
+            |> put_status(:unprocessable_entity)
+            |> render(Bzaar.ChangesetView, "error.json", changeset: changeset)
+        end
+      {:error, error} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(Bzaar.ErrorView, "error.json", error: error)
     end
   end
 

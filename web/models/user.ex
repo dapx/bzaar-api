@@ -13,6 +13,7 @@ defmodule Bzaar.User do
     field :image, :string, default: "https://image.freepik.com/icones-gratis/perfil-macho-utilizador-sombra_318-40244.jpg"
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :facebook_id, :string
     has_many :stores, Bzaar.Store
     has_many :item_cart, Bzaar.ItemCart
     has_one :credit_card, Bzaar.CreditCard
@@ -25,16 +26,24 @@ defmodule Bzaar.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :surname, :email, :active, :image, :password])
+    |> cast(params, [:name, :surname, :email, :active, :image, :password, :facebook_id])
     |> validate_required([:name, :surname, :email, :active, :password])
     |> unique_constraint(:email)
   end
 
-  def registration_changeset(struct, params) do
+  def registration_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params)
     |> cast(params, ~w(password), [])
     |> validate_length(:password, min: 6)
+    |> put_password_hash()
+  end
+
+  def facebook_changeset(struct, params \\ %{}) do
+    struct
+    |> changeset(params)
+    |> cast(params, ~w(facebook_id), [])
+    |> unique_constraint(:facebook_id)
     |> put_password_hash()
   end
 
@@ -55,4 +64,11 @@ defmodule Bzaar.User do
     end
   end
 
+  def find_user_by_facebook_user_id(user_id) do
+    user = Repo.get_by(User, facebook_id: user_id)
+    cond do
+      is_nil(user) -> {:error, "User id not found!"}
+      true -> {:ok, user}
+    end
+  end
 end

@@ -37,6 +37,8 @@ defmodule Bzaar.Router do
     scope "/auth" do
       post "/signup", UserController, :create
       post "/signin", SessionController, :signin
+      post "/facebook", SessionController, :signin_facebook
+      post "/signup_facebook", UserController, :create_facebook
     end
     
     scope "/secured" do
