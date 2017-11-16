@@ -40,7 +40,11 @@ defmodule Bzaar.Mixfile do
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.4"},
      {:guardian, "~> 0.14"},
-     {:facebook, "~> 0.17.0"}
+     {:facebook, "~> 0.17.0"},
+     {:ex_aws, "~> 2.0"},
+     {:ex_aws_s3, "~> 2.0"},
+     {:hackney, "~> 1.9"},
+     {:sweet_xml, "~> 0.6"}
     ]
   end
 

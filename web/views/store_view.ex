@@ -18,4 +18,8 @@ defmodule Bzaar.StoreView do
       logo: store.logo,
       user_id: store.user_id}
   end
+
+  def render("image.json", %{image_url: image_url}) do
+    image_url
+  end
 end
