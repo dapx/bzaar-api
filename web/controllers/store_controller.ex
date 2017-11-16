@@ -63,4 +63,12 @@ defmodule Bzaar.StoreController do
     send_resp(conn, :no_content, "")
   end
 
+  def upload(conn, %{"store_id" => id, "image_name" => image_name, "mimetype" => mimetype}) do
+    path = "store_images/#{id}/logo/#{image_name}"
+    {:ok, image_url} = Bzaar.S3Uploader.generate_url(path, mimetype)
+    conn
+    |> put_status(:created)
+    |> render("image.json", %{image_url: image_url})
+  end
+
 end
