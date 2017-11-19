@@ -2,6 +2,22 @@ defmodule Bzaar.StoreController do
   use Bzaar.Web, :controller
 
   alias Bzaar.Store
+  alias Bzaar.S3Uploader
+
+  plug :validate_nested_resource when action in [:upload]
+
+  def validate_nested_resource(conn, _) do
+    user = Guardian.Plug.current_resource(conn)
+    store_id = conn.params["store_id"]
+    store = Repo.one(from s in Store, where: s.id == ^store_id and s.user_id == ^user.id)
+
+    case store do
+      %Store{} -> conn
+      _ -> conn
+        |> put_status(403)
+        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+    end
+  end
 
   def index(conn, _params) do
     stores = Repo.all(Store)
@@ -10,14 +26,12 @@ defmodule Bzaar.StoreController do
 
   def list(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
-    store_id = conn.params["store_id"]
     stores = Repo.all(from s in Store,
       where: s.user_id == ^user.id)
     render(conn, "index.json", stores: stores)
   end
 
   def create(conn, %{"store" => store_params}) do
-    #user = Repo.get(Bzaar.User, user_id)
     user = Guardian.Plug.current_resource(conn)
     changeset = Store.changeset(%Store{ user_id: user.id }, store_params)
     
@@ -41,6 +55,13 @@ defmodule Bzaar.StoreController do
 
   def update(conn, %{"id" => id, "store" => store_params}) do
     store = Repo.get!(Store, id)
+    user = Guardian.Plug.current_resource(conn)
+    unless store.user_id == user.id do
+      conn
+      |> put_status(403)
+      |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+    end
+    IO.inspect store_params
     changeset = Store.changeset(store, store_params)
 
     case Repo.update(changeset) do
@@ -65,10 +86,10 @@ defmodule Bzaar.StoreController do
 
   def upload(conn, %{"store_id" => id, "image_name" => image_name, "mimetype" => mimetype}) do
     path = "store_images/#{id}/logo/#{image_name}"
-    {:ok, image_url} = Bzaar.S3Uploader.generate_url(path, mimetype)
+    {:ok, signed_url} = S3Uploader.generate_url(path, mimetype)
     conn
     |> put_status(:created)
-    |> render("image.json", %{image_url: image_url})
+    |> render("image.json", %{signed_url: signed_url, image_path: path, image_url: S3Uploader.get_access_bucket(path)})
   end
 
 end

@@ -1,5 +1,6 @@
 defmodule Bzaar.StoreView do
   use Bzaar.Web, :view
+  alias Bzaar.S3Uploader
 
   def render("index.json", %{stores: stores}) do
     %{data: render_many(stores, Bzaar.StoreView, "store.json")}
@@ -15,11 +16,15 @@ defmodule Bzaar.StoreView do
       description: store.description,
       email: store.email,
       active: store.active,
-      logo: store.logo,
+      logo: S3Uploader.get_access_bucket(store.logo),
       user_id: store.user_id}
   end
 
-  def render("image.json", %{image_url: image_url}) do
-    image_url
+  def render("image.json", %{signed_url: signed_url, image_url: image_url, image_path: image_path}) do
+    %{
+      signed_url: signed_url,
+      image_url: image_url,
+      image_path: image_path
+    }
   end
 end
