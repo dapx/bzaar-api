@@ -1,7 +1,6 @@
 defmodule Bzaar.SessionController do
   use Bzaar.Web, :controller
   alias Bzaar.User
-  import Facebook
 
   def signin(conn, %{"email" => email, "password" => password}) do  
     case User.find_and_confirm_password(email, password) do
@@ -31,28 +30,29 @@ defmodule Bzaar.SessionController do
       {:ok, facebook_user} ->
         case User.find_user_by_facebook_user_id(facebook_user["id"]) do
           {:ok, user} ->
-          {new_conn, credentials} = authenticate(conn, user)
+            {new_conn, credentials} = authenticate(conn, user)
   
-          new_conn
-          |> put_status(202)
-          # |> put_resp_header("authorization", "Bearer #{jwt}")
-          # |> put_resp_header("x-expires", "%{exp}")
-          |> render("login.json", credentials)
+            new_conn
+            |> put_status(202)
+            # |> put_resp_header("authorization", "Bearer #{jwt}")
+            # |> put_resp_header("x-expires", "%{exp}")
+            |> render("login.json", credentials)
 
-          {:error, error} ->
-          new_params = generate_facebook_user(facebook_user)
-          changeset = User.facebook_changeset(%User{}, new_params)
-          case Repo.insert(changeset) do
-            {:ok, user} ->
-              {new_conn, credentials} = authenticate(conn, user)
-              new_conn
-              |> put_status(202)
-              |> render("login.json", credentials)
-            {:error, changeset} ->
-              conn
-              |> put_status(:unprocessable_entity)
-              |> render(Bzaar.ChangesetView, "error.json", changeset: changeset)
-          end
+          {:error, _} ->
+            new_params = generate_facebook_user(facebook_user)
+            changeset = User.facebook_changeset(%User{}, new_params)
+            case Repo.insert(changeset) do
+              {:ok, user} ->
+                {new_conn, credentials} = authenticate(conn, user)
+
+                new_conn
+                |> put_status(202)
+                |> render("login.json", credentials)
+              {:error, changeset} ->
+                conn
+                |> put_status(:unprocessable_entity)
+                |> render(Bzaar.ChangesetView, "error.json", changeset: changeset)
+            end
         end
       {:error, error} ->
         conn
