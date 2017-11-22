@@ -14,6 +14,15 @@ defmodule Bzaar.ChangesetView do
   def render("error.json", %{changeset: changeset}) do
     # When encoded, the changeset returns its errors
     # as a JSON object. So we just pass it forward.
-    %{errors: translate_errors(changeset)}
+
+    errors = error_string_from_changeset(changeset)
+    %{error: errors}
   end
+
+  defp error_string_from_changeset(changeset) do
+    Enum.map(changeset.errors, fn {k, v} ->
+       "#{Phoenix.Naming.humanize(k)} #{translate_error(v)}"
+    end) |> Enum.join(". ")
+  end
+
 end

@@ -1,6 +1,7 @@
 defmodule Bzaar.ProductImage do
   use Bzaar.Web, :model
 
+  @derive {Poison.Encoder, only: [:url, :sequence]}
   schema "product_images" do
     field :url, :string
     field :sequence, :integer

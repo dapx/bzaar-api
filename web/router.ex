@@ -37,23 +37,26 @@ defmodule Bzaar.Router do
     scope "/auth" do
       post "/signup", UserController, :create
       post "/signin", SessionController, :signin
+      post "/facebook", SessionController, :signin_facebook
+      post "/signup_facebook", UserController, :create_facebook
     end
     
     scope "/secured" do
       pipe_through :secured
 
       resources "/stores", StoreController, except: [:delete] do
-
+        post "/upload_image", StoreController, :upload
         resources "/products", StoreProductController, except: [:delete] do
           resources "/product_images", ProductImageController, except: [:delete]
         end
 
         resources "/dispatchers", DispatcherController, except: [:delete]
       end
-
+      
+      get "/my_stores", StoreController, :list
       resources "/credit_cards", CreditCardController, except: [:delete]
       resources "/products", ProductController, only: [:index, :show]
-      resources "/item_cart", ItemCartController, except: [:delete]
+      resources "/item_cart", ItemCartController
     end
 
   end

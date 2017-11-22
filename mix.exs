@@ -19,7 +19,7 @@ defmodule Bzaar.Mixfile do
   def application do
     [mod: {Bzaar, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex]]
+                    :phoenix_ecto, :postgrex, :facebook]]
   end
 
   # Specifies which paths to compile per environment.
@@ -39,7 +39,13 @@ defmodule Bzaar.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.4"},
-     {:guardian, "~> 0.14"}]
+     {:guardian, "~> 0.14"},
+     {:facebook, "~> 0.17.0"},
+     {:ex_aws, "~> 2.0"},
+     {:ex_aws_s3, "~> 2.0"},
+     {:hackney, "~> 1.9"},
+     {:sweet_xml, "~> 0.6"}
+    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

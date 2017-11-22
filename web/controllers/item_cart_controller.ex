@@ -54,10 +54,16 @@ defmodule Bzaar.ItemCartController do
   def delete(conn, %{"id" => id}) do
     item_cart = Repo.get!(ItemCart, id)
 
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(item_cart)
-
-    send_resp(conn, :no_content, "")
+    case item_cart.status do
+      0 ->
+        Repo.delete!(item_cart)
+        # Here we use delete! (with a bang) because we expect
+        # it to always work (and if it does not, it will raise).
+        index(conn, %{})
+      _ ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a product in process");
+    end
   end
 end
