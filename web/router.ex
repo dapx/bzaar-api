@@ -47,7 +47,13 @@ defmodule Bzaar.Router do
       resources "/stores", StoreController, except: [:delete] do
         post "/upload_image", StoreController, :upload
         resources "/products", StoreProductController, except: [:delete] do
-          resources "/product_images", ProductImageController, except: [:delete]
+          resources "/product_images", ProductImageController, only: [:create, :update, :delete, :upload]
+          # Upload product images
+          post "/product_images/upload", ProductImageController, :upload
+
+          # It will be deprecated soon
+          # Upload product image default
+          post "/product_image", StoreProductController, :upload
         end
 
         resources "/dispatchers", DispatcherController, except: [:delete]

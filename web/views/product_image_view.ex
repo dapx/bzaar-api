@@ -15,4 +15,12 @@ defmodule Bzaar.ProductImageView do
       sequence: product_image.sequence,
       product_id: product_image.product_id}
   end
+
+  def render("image.json", %{signed_url: signed_url, image_url: image_url, image_path: image_path}) do
+    %{
+      signed_url: signed_url,
+      image_url: image_url,
+      image_path: image_path
+    }
+  end
 end

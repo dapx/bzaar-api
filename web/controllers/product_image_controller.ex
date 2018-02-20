@@ -2,14 +2,16 @@ defmodule Bzaar.ProductImageController do
   use Bzaar.Web, :controller
 
   alias Bzaar.ProductImage
+  alias Bzaar.S3Uploader
 
   def index(conn, _params) do
     product_images = Repo.all(ProductImage)
     render(conn, "index.json", product_images: product_images)
   end
 
-  def create(conn, %{"product_image" => product_image_params}) do
-    changeset = ProductImage.changeset(%ProductImage{}, product_image_params)
+  def create(conn, %{"store_product_id" => product_id, "product_image" => product_image_params}) do
+    product_image = Map.put(product_image_params, "product_id", product_id)
+    changeset = ProductImage.changeset(%ProductImage{}, product_image)
 
     case Repo.insert(changeset) do
       {:ok, product_image} ->
@@ -51,5 +53,14 @@ defmodule Bzaar.ProductImageController do
     Repo.delete!(product_image)
 
     send_resp(conn, :no_content, "")
+  end
+
+    ## TODO IMPLEMENTAR UPLOAD DE IMAGENS
+  def upload(conn, %{"store_product_id" => id, "image_name" => image_name, "mimetype" => mimetype}) do
+    path = "product_images/#{id}/images/#{image_name}"
+    {:ok, signed_url} = S3Uploader.generate_url(path, mimetype)
+    conn
+    |> put_status(:created)
+    |> render("image.json", %{signed_url: signed_url, image_path: path, image_url: S3Uploader.get_access_bucket(path)})
   end
 end

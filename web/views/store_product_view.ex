@@ -20,4 +20,12 @@ defmodule Bzaar.StoreProductView do
       images: product.product_images,
       store_id: product.store_id}
   end
+
+  def render("image.json", %{signed_url: signed_url, image_url: image_url, image_path: image_path}) do
+    %{
+      signed_url: signed_url,
+      image_url: image_url,
+      image_path: image_path
+    }
+  end
 end
