@@ -16,6 +16,8 @@ defmodule Bzaar.UserView do
       email: user.email,
       active: user.active,
       image: user.image,
-      password: user.password}
+      password: user.password,
+      shopkeeper: user.shopkeeper
+    }
   end
 end

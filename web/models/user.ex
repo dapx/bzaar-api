@@ -3,7 +3,7 @@ defmodule Bzaar.User do
   alias Bzaar.{Repo, User}
 
   #https://github.com/elixir-ecto/ecto/issues/840
-  @derive {Poison.Encoder, only: [:id, :name, :surname, :email, :active]}
+  @derive {Poison.Encoder, only: [:id, :name, :surname, :email, :active, :shopkeeper]}
 
   schema "users" do
     field :name, :string
@@ -14,6 +14,7 @@ defmodule Bzaar.User do
     field :password, :string, virtual: true
     field :password_hash, :string
     field :facebook_id, :string
+    field :shopkeeper, :boolean, default: false
     has_many :stores, Bzaar.Store
     has_many :item_cart, Bzaar.ItemCart
     has_one :credit_card, Bzaar.CreditCard
@@ -26,7 +27,7 @@ defmodule Bzaar.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :surname, :email, :active, :image, :password, :facebook_id])
+    |> cast(params, [:name, :surname, :email, :active, :image, :password, :facebook_id, :shopkeeper])
     |> validate_required([:name, :surname, :email, :active, :password])
     |> unique_constraint(:email)
   end

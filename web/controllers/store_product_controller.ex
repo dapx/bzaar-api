@@ -3,6 +3,7 @@ defmodule Bzaar.StoreProductController do
 
   alias Bzaar.Product
   alias Bzaar.Store
+  alias Bzaar.S3Uploader
   import Ecto.Query
 
   plug :validate_nested_resource when action in [:create, :edit]
@@ -73,4 +74,14 @@ defmodule Bzaar.StoreProductController do
 
     send_resp(conn, :no_content, "")
   end
+
+  ## TODO IMPLEMENTAR UPLOAD DE IMAGENS
+  def upload(conn, %{"store_product_id" => id, "image_name" => image_name, "mimetype" => mimetype}) do
+    path = "product_images/#{id}/default/#{image_name}"
+    {:ok, signed_url} = S3Uploader.generate_url(path, mimetype)
+    conn
+    |> put_status(:created)
+    |> render("image.json", %{signed_url: signed_url, image_path: path, image_url: S3Uploader.get_access_bucket(path)})
+  end
+
 end

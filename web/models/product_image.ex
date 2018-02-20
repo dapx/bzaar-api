@@ -15,7 +15,7 @@ defmodule Bzaar.ProductImage do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:url, :sequence])
-    |> validate_required([:url, :sequence])
+    |> cast(params, [:url, :sequence, :product_id])
+    |> validate_required([:url, :sequence, :product_id])
   end
 end
