@@ -14,6 +14,10 @@ defmodule Bzaar.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+  use Phoenix.ConnTest
+  alias Bzaar.TestHelpers
+  import Bzaar.Factory
+  
 
   using do
     quote do
@@ -39,6 +43,17 @@ defmodule Bzaar.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Bzaar.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    unless tags[:html] do
+      conn = put_req_header(conn, "accept", "application/json")
+    end
+
+    if tags[:logged_in] do
+      conn = Phoenix.ConnTest.build_conn()
+      user = insert(:user)
+      {:ok, conn: TestHelpers.api_sign_in(conn, user), user: user}
+    else
+      {:ok, conn: Phoenix.ConnTest.build_conn() }
+    end
+    
   end
 end

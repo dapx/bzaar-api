@@ -16,9 +16,8 @@ defmodule Bzaar.TestHelpers do
   end
 
   def api_sign_in(conn, user) do
-    new_conn = Guardian.Plug.api_sign_in(conn, user)
-    token 	 = Guardian.Plug.current_token(new_conn)
-    put_req_header(new_conn, "authorization", "Bearer #{token}")
-    new_conn
+    conn = Guardian.Plug.api_sign_in(conn, user)
+    token = Guardian.Plug.current_token(conn)
+    conn = put_req_header(conn, "authorization", "Bearer #{token}")
   end
 end
