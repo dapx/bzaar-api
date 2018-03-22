@@ -13,7 +13,7 @@ defmodule Bzaar.S3Uploader do
 
   defp get_access_endpoint(path) do
     s3_endpoint = Application.get_env(:ex_aws, :s3)
-    "#{s3_endpoint[:scheme]}s3-${s3_endpoint[:region]}.amazonaws.com/"
+    "#{s3_endpoint[:scheme]}s3-#{s3_endpoint[:region]}.amazonaws.com/"
   end
 
 end
