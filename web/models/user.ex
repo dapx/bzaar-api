@@ -35,9 +35,14 @@ defmodule Bzaar.User do
   def registration_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params)
+    |> downcase_email
     |> cast(params, ~w(password), [])
     |> validate_length(:password, min: 6)
     |> put_password_hash()
+  end
+
+  def downcase_email(changeset) do
+    update_change(changeset, :email, &String.downcase/1)
   end
 
   def facebook_changeset(struct, params \\ %{}) do
