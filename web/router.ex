@@ -53,7 +53,7 @@ defmodule Bzaar.Router do
 
           # It will be deprecated soon
           # Upload product image default
-          post "/product_image", StoreProductController, :upload
+          post "/product_image/upload", StoreProductController, :upload
         end
 
         resources "/dispatchers", DispatcherController, except: [:delete]

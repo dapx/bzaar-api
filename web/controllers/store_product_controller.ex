@@ -4,9 +4,10 @@ defmodule Bzaar.StoreProductController do
   alias Bzaar.Product
   alias Bzaar.Store
   alias Bzaar.S3Uploader
+  alias Bzaar.Size
   import Ecto.Query
 
-  plug :validate_nested_resource when action in [:create, :edit]
+  plug :validate_nested_resource when action in [:create, :edit, :upload]
 
   def validate_nested_resource(conn, _) do
     user = Guardian.Plug.current_resource(conn)
@@ -18,6 +19,7 @@ defmodule Bzaar.StoreProductController do
       _ -> conn
         |> put_status(403)
         |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+        |> halt # Used to prevend Plug.Conn.AlreadySentError
     end
   end
 
@@ -25,19 +27,20 @@ defmodule Bzaar.StoreProductController do
     store_id = conn.params["store_id"]
     products = Repo.all(from p in Product,
       where: p.store_id == ^store_id,
-      preload: [:product_images])
+      preload: [:images, :sizes])
     render(conn, "index.json", products: products)
   end
 
   def create(conn, %{"product" => product_params}) do
-    product = Map.put(product_params, "store_id", conn.params["store_id"])
+    store_id = conn.params["store_id"]
+    product = Map.put(product_params, "store_id", store_id)
     changeset = Product.changeset(%Product{}, product)
 
     case Repo.insert(changeset) do
       {:ok, product} ->
         conn
         |> put_status(:created)
-        #|> put_resp_header("location", store_product_path(conn, :show, product))
+        |> put_resp_header("location", store_store_product_path(conn, :show, product, store_id))
         |> render(Bzaar.StoreProductView, "show.json", product: product)
       {:error, changeset} ->
         conn
@@ -47,12 +50,17 @@ defmodule Bzaar.StoreProductController do
   end
 
   def show(conn, %{"id" => id}) do
-    product = Repo.get!(Product, id)
+    product =
+      from(Product)
+        |> preload([:images, :sizes])
+        |> Repo.get!(id)
     render(conn, "show.json", product: product)
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = Repo.get!(Product, id)
+    product = from(Product)
+        |> preload([:images, :sizes])
+        |> Repo.get!(id)
     changeset = Product.changeset(product, product_params)
 
     case Repo.update(changeset) do

@@ -4,12 +4,9 @@ defmodule Bzaar.Product do
   schema "products" do
     field :name, :string
     field :description, :string
-    field :price, :float
-    field :quantity, :integer
-    field :size, :string
-    field :image, :string
     belongs_to :store, Bzaar.Store
-    has_many :product_images, Bzaar.ProductImage
+    has_many :images, Bzaar.ProductImage, on_delete: :delete_all, on_replace: :delete
+    has_many :sizes, Bzaar.Size, on_delete: :delete_all, on_replace: :delete
 
     timestamps()
   end
@@ -19,7 +16,9 @@ defmodule Bzaar.Product do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :description, :price, :quantity, :size, :store_id, :image])
-    |> validate_required([:name, :description, :price, :quantity, :size, :store_id, :image])
+    |> cast(params, [:name, :description, :store_id])
+    |> cast_assoc(:sizes, required: false)
+    |> cast_assoc(:images, required: false)
+    |> validate_required([:name, :description, :store_id])
   end
 end
