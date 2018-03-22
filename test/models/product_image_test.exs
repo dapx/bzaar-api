@@ -3,7 +3,7 @@ defmodule Bzaar.ProductImageTest do
 
   alias Bzaar.ProductImage
 
-  @valid_attrs %{sequence: 42, url: "some content"}
+  @valid_attrs %{sequence: 42, url: "some content", product_id: 1}
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
