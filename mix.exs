@@ -19,7 +19,7 @@ defmodule Bzaar.Mixfile do
   def application do
     [mod: {Bzaar, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :mariaex, :facebook, :ex_machina]]
+                    :phoenix_ecto, :mariaex, :facebook]]
   end
 
   # Specifies which paths to compile per environment.
