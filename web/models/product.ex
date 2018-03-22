@@ -4,19 +4,11 @@ defmodule Bzaar.Product do
   schema "products" do
     field :name, :string
     field :description, :string
-    field :image, :string
     belongs_to :store, Bzaar.Store
-    has_many :images, Bzaar.ProductImage, on_delete: :delete_all
-    has_many :sizes, Bzaar.Size, on_delete: :delete_all
+    has_many :images, Bzaar.ProductImage, on_delete: :delete_all, on_replace: :delete
+    has_many :sizes, Bzaar.Size, on_delete: :delete_all, on_replace: :delete
 
     timestamps()
-  end
-
-  defp inspect_map(map) do
-    IO.puts "INSPECT"
-    IO.inspect map
-    IO.puts ";"
-    map
   end
 
   @doc """

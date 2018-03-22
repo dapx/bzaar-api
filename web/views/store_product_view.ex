@@ -9,19 +9,6 @@ defmodule Bzaar.StoreProductView do
     %{data: render_one(product, Bzaar.StoreProductView, "product.json", as: :product)}
   end
 
-  def render("created.json", %{product: product}) do
-    %{data: render_one(product, Bzaar.StoreProductView, "product_without_images.json", as: :product)}
-  end
-
-  def render("product_without_images.json", %{product: product}) do
-    %{id: product.id,
-      name: product.name,
-      description: product.description,
-      image: product.image,
-      sizes: product.sizes,
-      store_id: product.store_id}
-  end
-
   def render("product.json", %{product: product}) do
     %{id: product.id,
       name: product.name,

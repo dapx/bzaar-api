@@ -2,7 +2,7 @@ defmodule Bzaar.Size do
   use Bzaar.Web, :model
   
   # https://github.com/elixir-ecto/ecto/issues/840
-  @derive {Poison.Encoder, only: [:name, :quantity, :price]}
+  @derive {Poison.Encoder, only: [:id, :name, :quantity, :price]}
   schema "sizes" do
     field :name, :string
     field :quantity, :integer
@@ -10,13 +10,6 @@ defmodule Bzaar.Size do
     belongs_to :product, Bzaar.Product
 
     timestamps()
-  end
-
-  defp inspect_map(map) do
-    IO.puts "INSPECT"
-    IO.inspect map
-    IO.puts ";"
-    map
   end
 
   @doc """

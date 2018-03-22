@@ -5,7 +5,7 @@ defmodule Bzaar.ProductController do
   import Ecto.Query
 
   def index(conn, _params) do
-    products = Repo.all(from p in Product, preload: [:images])
+    products = Repo.all(from p in Product, preload: [:images, :sizes])
     render(conn, "index.json", products: products)
   end
 

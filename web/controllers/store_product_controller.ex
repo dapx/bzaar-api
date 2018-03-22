@@ -34,7 +34,6 @@ defmodule Bzaar.StoreProductController do
   def create(conn, %{"product" => product_params}) do
     store_id = conn.params["store_id"]
     product = Map.put(product_params, "store_id", store_id)
-
     changeset = Product.changeset(%Product{}, product)
 
     case Repo.insert(changeset) do
@@ -42,7 +41,7 @@ defmodule Bzaar.StoreProductController do
         conn
         |> put_status(:created)
         |> put_resp_header("location", store_store_product_path(conn, :show, product, store_id))
-        |> render(Bzaar.StoreProductView, "created.json", product: product)
+        |> render(Bzaar.StoreProductView, "show.json", product: product)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -59,7 +58,9 @@ defmodule Bzaar.StoreProductController do
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = Repo.get!(Product, id)
+    product = from(Product)
+        |> preload([:images, :sizes])
+        |> Repo.get!(id)
     changeset = Product.changeset(product, product_params)
 
     case Repo.update(changeset) do

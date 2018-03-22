@@ -55,12 +55,6 @@ defmodule Bzaar.StoreController do
 
   def update(conn, %{"id" => id, "store" => store_params}) do
     store = Repo.get!(Store, id)
-    user = Guardian.Plug.current_resource(conn)
-    unless store.user_id == user.id do
-      conn
-      |> put_status(403)
-      |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
-    end
     changeset = Store.changeset(store, store_params)
 
     case Repo.update(changeset) do

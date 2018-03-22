@@ -13,8 +13,7 @@ defmodule Bzaar.ProductView do
     %{id: product.id,
       name: product.name,
       description: product.description,
-      image: product.image,
-      images: product.product_images,
+      images: product.images,
       sizes: product.sizes,
       store_id: product.store_id}
   end

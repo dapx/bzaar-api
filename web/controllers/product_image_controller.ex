@@ -11,7 +11,7 @@ defmodule Bzaar.ProductImageController do
 
   def create(conn, %{"store_product_id" => product_id, "product_image" => product_image_params}) do
     product_image = Map.put(product_image_params, "product_id", product_id)
-    changeset = ProductImage.changeset(%ProductImage{}, product_image)
+    changeset = ProductImage.changeset_validate_product_id(%ProductImage{}, product_image)
 
     case Repo.insert(changeset) do
       {:ok, product_image} ->
