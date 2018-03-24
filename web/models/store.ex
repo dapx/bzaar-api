@@ -1,12 +1,13 @@
 defmodule Bzaar.Store do
   use Bzaar.Web, :model
+  alias Bzaar.S3Uploader
 
   schema "stores" do
     field :name, :string
     field :description, :string
     field :email, :string
     field :active, :boolean, default: false
-    field :logo, :string, default: "store_images/default/default_store.png"
+    field :logo, :string, default: S3Uploader.get_access_bucket("store_images/default/default_store.png")
     belongs_to :user, Bzaar.User
     has_many :products, Bzaar.Product
     has_many :dispatchers, Bzaar.Dispatcher
