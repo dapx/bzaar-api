@@ -1,7 +1,48 @@
 defmodule Bzaar.ItemCartController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.{ItemCart, Product, Size}
+  alias Bzaar.{ItemCart, Store, User, Product, Size}
+
+  plug :validate_nested_resource when action in [:update]
+
+  def validate_nested_resource(conn, _) do
+    params = conn.params
+    user = Guardian.Plug.current_resource(conn)
+    new_item = conn.params["item_cart"]
+    new_status = new_item["status"]
+    item_cart = get_item_by_id_and_user(params["id"], user.id)
+    validate_update_action(conn, item_cart, new_status)
+  end
+
+  defp validate_update_action(conn, item_cart, new_status) do
+    case { item_cart, new_status } do
+      { nil, _ } -> conn
+        |> put_status(403)
+        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+        |> halt # Used to prevend Plug.Conn.AlreadySentError
+      { %ItemCart{ status: status }, new_status }
+        when (status + 1) == new_status or (status - 1) == 0
+         -> conn
+      _ -> conn
+        |> put_status(403)
+        |> render(Bzaar.ErrorView, "error.json", error: "It's not possible, sorry")
+        |> halt # Used to prevend Plug.Conn.AlreadySentError
+    end
+  end
+
+  defp get_item_by_id_and_user(item_id, user_id) do
+    Repo.one(
+      from i in ItemCart,
+      join: z in Size,
+      join: p in Product,
+      join: s in Store,
+     where: i.id == ^item_id
+        and i.size_id == z.id
+        and z.product_id == p.id
+        and p.store_id == s.id
+        and s.user_id == ^user_id
+    )
+  end
 
   def index(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
