@@ -45,6 +45,7 @@ defmodule Bzaar.Router do
       pipe_through :secured
 
       resources "/stores", StoreController, except: [:delete] do
+        resources "/item_cart", StoreItemCartController, only: [:index, :update]
         post "/upload_image", StoreController, :upload
         resources "/products", StoreProductController, except: [:delete] do
           resources "/product_images", ProductImageController, only: [:create, :update, :delete, :upload]

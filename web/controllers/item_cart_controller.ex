@@ -9,39 +9,28 @@ defmodule Bzaar.ItemCartController do
     params = conn.params
     user = Guardian.Plug.current_resource(conn)
     new_item = conn.params["item_cart"]
-    new_status = new_item["status"]
-    item_cart = get_item_by_id_and_user(params["id"], user.id)
-    validate_update_action(conn, item_cart, new_status)
-  end
-
-  defp validate_update_action(conn, item_cart, new_status) do
-    case { item_cart, new_status } do
-      { nil, _ } -> conn
+    item_id = new_item["id"]
+    old_item = Repo.one(from i in ItemCart,
+      where: i.id == ^item_id and i.user_id == ^user.id
+    )
+    old_status = case old_item do
+      nil -> conn
         |> put_status(403)
-        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+        |> render(Bzaar.ErrorView, "error.json", error: "Item not found!")
         |> halt # Used to prevend Plug.Conn.AlreadySentError
-      { %ItemCart{ status: status }, new_status }
-        when (status + 1) == new_status or (status - 1) == 0
-         -> conn
-      _ -> conn
+      %{status: old_status} -> old_status
+    end
+
+    new_status = new_item["status"]
+    cond do # To update to status > 1, use StoreItemCartController
+      old_status == 3 and new_status == 4 -> conn # Confirm delivery
+      new_status > 1 -> conn
         |> put_status(403)
         |> render(Bzaar.ErrorView, "error.json", error: "It's not possible, sorry")
         |> halt # Used to prevend Plug.Conn.AlreadySentError
+      old_status < 1 and new_status < 1 -> conn
+      true -> conn
     end
-  end
-
-  defp get_item_by_id_and_user(item_id, user_id) do
-    Repo.one(
-      from i in ItemCart,
-      join: z in Size,
-      join: p in Product,
-      join: s in Store,
-     where: i.id == ^item_id
-        and i.size_id == z.id
-        and z.product_id == p.id
-        and p.store_id == s.id
-        and s.user_id == ^user_id
-    )
   end
 
   def index(conn, _params) do
@@ -132,7 +121,7 @@ defmodule Bzaar.ItemCartController do
       _ ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a product in process");
+        |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a order already processed");
     end
   end
 end
