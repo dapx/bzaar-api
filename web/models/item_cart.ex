@@ -24,7 +24,6 @@ defmodule Bzaar.ItemCart do
         :size_id, :size_name, :size_price,
         :product_name, :product_image
       ])
-    |> unique_constraint(:user_product, name: :user_size_index)
     |> validate_required([
         :quantity, :status, :user_id,
         :size_id, :size_name, :size_price,
