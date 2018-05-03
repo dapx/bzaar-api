@@ -8,7 +8,7 @@ defmodule Bzaar.Dispatcher do
     field :time_to_deliver, :integer
     belongs_to :store, Bzaar.Store
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

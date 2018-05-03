@@ -9,7 +9,7 @@ defmodule Bzaar.CreditCard do
     field :active, :boolean, default: false
     belongs_to :user, Bzaar.User
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

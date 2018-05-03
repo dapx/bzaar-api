@@ -19,7 +19,7 @@ defmodule Bzaar.User do
     has_many :item_cart, Bzaar.ItemCart
     has_one :credit_card, Bzaar.CreditCard
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

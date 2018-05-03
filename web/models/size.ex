@@ -9,7 +9,7 @@ defmodule Bzaar.Size do
     field :price, :float
     belongs_to :product, Bzaar.Product
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """
