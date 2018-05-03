@@ -8,7 +8,7 @@ defmodule Bzaar.Product do
     has_many :images, Bzaar.ProductImage, on_delete: :delete_all, on_replace: :delete
     has_many :sizes, Bzaar.Size, on_delete: :delete_all, on_replace: :delete
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

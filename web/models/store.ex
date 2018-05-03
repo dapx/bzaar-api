@@ -12,7 +12,7 @@ defmodule Bzaar.Store do
     has_many :products, Bzaar.Product
     has_many :dispatchers, Bzaar.Dispatcher
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

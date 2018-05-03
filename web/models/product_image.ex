@@ -8,7 +8,7 @@ defmodule Bzaar.ProductImage do
     field :sequence, :integer
     belongs_to :product, Bzaar.Product
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """

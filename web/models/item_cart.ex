@@ -11,7 +11,7 @@ defmodule Bzaar.ItemCart do
     belongs_to :user, Bzaar.User
     belongs_to :size, Bzaar.Size
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc """
