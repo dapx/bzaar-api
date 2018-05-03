@@ -22,6 +22,8 @@ defmodule Bzaar.ItemCartView do
       product_price: item_cart.size_price,
       quantity: item_cart.quantity,
       status: item_cart.status,
+      updated_at: item_cart.updated_at,
+      inserted_at: item_cart.inserted_at,
     }
   end
 
@@ -35,7 +37,9 @@ defmodule Bzaar.ItemCartView do
       size_name: item_cart.size_name,
       product_name: item_cart.size.product.name,
       product_price: item_cart.size.price,
-      product_image: url
+      product_image: url,
+      updated_at: item_cart.updated_at,
+      inserted_at: item_cart.inserted_at,
     }
   end
 end
