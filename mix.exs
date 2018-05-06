@@ -19,7 +19,7 @@ defmodule Bzaar.Mixfile do
   def application do
     [mod: {Bzaar, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :facebook]]
+                    :phoenix_ecto, :postgrex, :facebook, :bamboo, :bamboo_smtp]]
   end
 
   # Specifies which paths to compile per environment.
@@ -46,6 +46,8 @@ defmodule Bzaar.Mixfile do
      {:hackney, "~> 1.9"},
      {:sweet_xml, "~> 0.6"},
      {:ex_machina, "~> 2.1", only: :test},
+     {:bamboo, "~> 0.8"},
+     {:bamboo_smtp, "~> 1.4.0"},
     ]
   end
 

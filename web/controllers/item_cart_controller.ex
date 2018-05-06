@@ -97,10 +97,22 @@ defmodule Bzaar.ItemCartController do
 
   def update(conn, %{"id" => id, "item_cart" => item_cart_params}) do
     item_cart = Repo.get!(ItemCart, id)
+      |> Repo.preload([
+          :user, :size, {:size, [
+            :product, {:product, [
+              :images, :store, {:store, [
+                :user
+              ]}
+            ]}
+          ]}
+        ])
     changeset = ItemCart.changeset(item_cart, item_cart_params)
 
     case Repo.update(changeset) do
       {:ok, item_cart} ->
+        if (item_cart.status == 1) do
+          Bzaar.Email.notify_new_order(item_cart) |> Bzaar.Mailer.deliver_later
+        end
         render(conn, "show.json", item_cart: item_cart)
       {:error, changeset} ->
         conn
