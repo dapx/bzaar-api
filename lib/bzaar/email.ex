@@ -12,8 +12,8 @@ defmodule Bzaar.Email do
   """
   @welcome_text "Bem vindo/a!"
 
-  def welcome_email(%User{ name: name, surname: surname, email: email }) do
-    base_email
+  def welcome_email(%User{ name: name, email: email }) do
+    base_email()
     |> to(email)
     |> subject("#{name}, Seja bem vindo/a!!!")
     |> put_header("Reply-To", "dap1995@gmail.com")
@@ -23,7 +23,7 @@ defmodule Bzaar.Email do
   def notify_new_order(item_cart) do
     store = item_cart.size.product.store
     store_owner = store.user
-    base_email
+    base_email()
     |> to(store_owner.email)
     |> subject("#{store_owner.name}, Um cliente solicitou confirmação da venda de um produto!")
     |> put_header("Reply-To", "#{item_cart.user.email}")
@@ -37,7 +37,7 @@ defmodule Bzaar.Email do
 
   def notify_store_confirmation(item_cart) do
     store = item_cart.size.product.store
-    base_email
+    base_email()
     |> to(item_cart.user.email)
     |> subject("#{item_cart.user.name}, A loja #{store.name} CONFIRMOU a venda do produto!")
     |> put_header("Reply-To", "#{store.email}")
@@ -49,7 +49,7 @@ defmodule Bzaar.Email do
 
   def notify_cancel(item_cart) do
     store = item_cart.size.product.store
-    base_email
+    base_email()
     |> to(item_cart.user.email)
     |> subject("""
       #{item_cart.user.name}, o produto foi cancelado. Sentimos muito! 
@@ -65,7 +65,7 @@ defmodule Bzaar.Email do
 
   def notify_in_delivery(item_cart) do
     store = item_cart.size.product.store
-    base_email
+    base_email()
     |> to(item_cart.user.email)
     |> subject("""
       Produto já está nas ruas, fique atento para recebe-lo.
@@ -82,8 +82,8 @@ defmodule Bzaar.Email do
   def notify_new_order(item_cart) do
     store = item_cart.size.product.store
     store_owner = store.user
-    base_email
-    |> to(user.email)
+    base_email()
+    |> to(store_owner.email)
     |> subject("#{store_owner.name}, Confirmação da venda de um produto!")
     |> put_header("Reply-To", "#{item_cart.user.email}")
     |> html_body("""
@@ -93,10 +93,9 @@ defmodule Bzaar.Email do
       """)
   end
 
-
   defp base_email do
     # Here you can set a default from, default headers, etc.
-    new_email
+    new_email()
     |> from("admin@bzaar.com.br")
   end
 end
