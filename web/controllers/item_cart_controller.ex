@@ -6,30 +6,28 @@ defmodule Bzaar.ItemCartController do
   plug :validate_nested_resource when action in [:update]
 
   def validate_nested_resource(conn, _) do
-    params = conn.params
-    user = Guardian.Plug.current_resource(conn)
-    new_item = conn.params["item_cart"]
-    item_id = new_item["id"]
-    old_item = Repo.one(from i in ItemCart,
-      where: i.id == ^item_id and i.user_id == ^user.id
-    )
-    old_status = case old_item do
-      nil -> conn
-        |> put_status(403)
-        |> render(Bzaar.ErrorView, "error.json", error: "Item not found!")
-        |> halt # Used to prevend Plug.Conn.AlreadySentError
-      %{status: old_status} -> old_status
-    end
+    with %User{ active: active } = user when active != false <- Guardian.Plug.current_resource(conn),
+         %{ "item_cart" => new_item } when not is_nil(new_item) <- (conn.params), # Get future state
+         %{ "id" => item_id, "status" => new_status } <- new_item, # Get item id and new status
+         %ItemCart{ status: old_status } <- Repo.get_by!(ItemCart, [id: item_id, user_id: user.id])
+    do
+      cond do
+        (old_status == 3 and new_status == 4) or # Allow to change to received product
+          (old_status < 1 and new_status < 1) -> conn # Allow to confirm purchase
 
-    new_status = new_item["status"]
-    cond do # To update to status > 1, use StoreItemCartController
-      old_status == 3 and new_status == 4 -> conn # Confirm delivery
-      new_status > 1 -> conn
-        |> put_status(403)
-        |> render(Bzaar.ErrorView, "error.json", error: "It's not possible, sorry")
-        |> halt # Used to prevend Plug.Conn.AlreadySentError
-      old_status < 1 and new_status < 1 -> conn
-      true -> conn
+        new_status > 1 -> conn # Users can't modify, store owner only
+          |> show_error("Apenas o lojista pode alterar este status")
+
+        true -> conn # else allow all
+      end
+    else
+      %User{ active: false } ->
+        conn
+        |> show_error("Você precisa confirmar seu e-mail")
+      nil -> conn
+        |> show_error("Item not found!")
+      _ -> conn
+        |> show_error("Ocorreu um erro!")
     end
   end
 
@@ -135,5 +133,12 @@ defmodule Bzaar.ItemCartController do
         |> put_status(:unprocessable_entity)
         |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a order already processed");
     end
+  end
+
+  defp show_error(conn, error) do
+    conn
+    |> put_status(403)
+    |> render(Bzaar.ErrorView, "error.json", error: error)
+    |> halt # Used to prevend Plug.Conn.AlreadySentError
   end
 end

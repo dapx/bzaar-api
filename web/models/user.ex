@@ -61,6 +61,10 @@ defmodule Bzaar.User do
     end
   end
 
+  def mark_as_verified(user) do
+    change(user, %{active: true})
+  end
+
   def find_and_confirm_password(email, password) do
     user = Repo.get_by(User, email: String.downcase(email))
     cond do

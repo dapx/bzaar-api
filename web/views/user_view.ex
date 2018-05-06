@@ -9,6 +9,10 @@ defmodule Bzaar.UserView do
     %{data: render_one(user, Bzaar.UserView, "user.json")}
   end
 
+  def render("verified.json", %{user: user}) do
+    %{active: user.active}
+  end
+
   def render("user.json", %{user: user}) do
     %{id: user.id,
       name: user.name,
