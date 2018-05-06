@@ -39,6 +39,7 @@ defmodule Bzaar.Router do
       post "/signin", SessionController, :signin
       post "/facebook", SessionController, :signin_facebook
       post "/signup_facebook", UserController, :create_facebook
+      get "/verify", UserController, :verify_email
     end
     
     scope "/secured" do

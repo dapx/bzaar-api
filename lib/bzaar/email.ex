@@ -11,13 +11,26 @@ defmodule Bzaar.Email do
   Aproveite!
   """
   @welcome_text "Bem vindo/a!"
+  @bzaar_email "admin@bzaar.com.br"
 
   def welcome_email(%User{ name: name, email: email }) do
     base_email()
     |> to(email)
     |> subject("#{name}, Seja bem vindo/a!!!")
-    |> put_header("Reply-To", "dap1995@gmail.com")
+    |> put_header("Reply-To", @bzaar_email)
     |> html_body(@welcome_html)
+  end
+
+  def confirmation_email(token, %User{ name: name, email: email }) do
+    base_email()
+    |> to(email)
+    |> subject("Confirmação de e-mail")
+    |> put_header("Reply-To", @bzaar_email)
+    |> html_body("""
+    #{name}, Você acabou de se cadastrar no Bzaar, para ativar a sua conta clique no link abaixo:
+    <a href="#{get_url()}/bzaar/auth/verify/?token=#{token}">Clique aqui para ativar sua conta</a><br />
+    Caso você não se cadastrou em nossa aplicação você pode nos retornar este e-mail.
+    """)
   end
 
   def notify_new_order(item_cart) do
@@ -97,5 +110,19 @@ defmodule Bzaar.Email do
     # Here you can set a default from, default headers, etc.
     new_email()
     |> from("admin@bzaar.com.br")
+  end
+
+  defp get_url do
+    case Application.get_env(:bzaar, Bzaar.Endpoint)[:url] do
+      [scheme: scheme, host: host, port: 443] ->
+        "#{scheme}://#{host}"
+      [scheme: scheme, host: host, port: port] ->
+        "#{scheme}://#{host}:#{port}"
+      [host: host, port: port] ->
+        "http://#{host}:#{port}"
+      [host: host] -> "http://#{host}"
+      [port: port] -> "http://localhost:#{port}"
+      _ -> "http://localhost"
+    end
   end
 end

@@ -11,7 +11,7 @@ config :bzaar,
 
 # Configures the endpoint
 config :bzaar, Bzaar.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4000],
   secret_key_base: "N+o9NTFd9P6/ZarpWXPXO2fn1ieyAeaoP4u3qEzkJrJuUKabciY/FQby4fbj++1I",
   render_errors: [view: Bzaar.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Bzaar.PubSub,
