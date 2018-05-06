@@ -72,9 +72,9 @@ defmodule Bzaar.Email do
       """)
     |> put_header("Reply-To", "#{store.email}")
     |> html_body("""
-      #{item_cart.user.name}><br />
-      <h1>A loja #{store.name} acabou de enviar o seu produto!</h1><p />
-      <h1>Produto #{item_cart.product_name} - #{item_cart.size_name} está à caminho!</h1><p />
+      <h2>#{item_cart.user.name}</h2>,<br />
+      <h2>A loja #{store.name} acabou de enviar o seu produto!</h2><p />
+      <h4>Produto #{item_cart.product_name} - #{item_cart.size_name} está à caminho!</h4><p />
       Qualquer dúvida é possível responder este e-mail diretamente á loja.
       """)
   end
