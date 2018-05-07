@@ -1,10 +1,8 @@
 defmodule Bzaar.StoreProductController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.Product
-  alias Bzaar.Store
+  alias Bzaar.{ Product, Store, Size, ProductImage }
   alias Bzaar.S3Uploader
-  alias Bzaar.Size
   import Ecto.Query
 
   plug :validate_nested_resource when action in [:create, :edit, :upload]
@@ -25,9 +23,13 @@ defmodule Bzaar.StoreProductController do
 
   def index(conn, _params) do
     store_id = conn.params["store_id"]
+    images_query = from i in ProductImage, order_by: i.sequence
     products = Repo.all(from p in Product,
       where: p.store_id == ^store_id,
-      preload: [:images, :sizes])
+      preload: [
+        :sizes,
+        images: ^images_query
+      ])
     render(conn, "index.json", products: products)
   end
 
@@ -50,9 +52,13 @@ defmodule Bzaar.StoreProductController do
   end
 
   def show(conn, %{"id" => id}) do
+    images_query = from i in ProductImage, order_by: i.sequence
     product =
       from(Product)
-        |> preload([:images, :sizes])
+        |> preload([
+            :sizes,
+            images: ^images_query
+          ])
         |> Repo.get!(id)
     render(conn, "show.json", product: product)
   end
