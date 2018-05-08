@@ -5,13 +5,11 @@ defmodule Bzaar.StoreItemCartController do
 
   plug :validate_nested_resource when action in [:update]
 
-  def validate_nested_resource(conn, teste) do
-    IO.inspect teste
-    params = conn.params
+  def validate_nested_resource(conn, _) do
     user = Guardian.Plug.current_resource(conn)
-    new_item = conn.params["item_cart"]
+    %{ "item_cart" => new_item, "id" => item_id }= conn.params
     new_status = new_item["status"]
-    item_cart = get_item_by_id_and_user(params["id"], user.id)
+    item_cart = get_item_by_id_and_user(item_id, user.id)
     validate_update_action(conn, item_cart, new_status)
   end
 
