@@ -2,6 +2,8 @@ defmodule Bzaar.ProductImage do
   use Bzaar.Web, :model
 
   # https://github.com/elixir-ecto/ecto/issues/840
+  # when preload images, it comes with ecto meta field
+  # to solve it, We define what fields should be parse to a map.
   @derive {Poison.Encoder, only: [:id, :url, :sequence]}
   schema "product_images" do
     field :url, :string

@@ -2,6 +2,8 @@ defmodule Bzaar.Size do
   use Bzaar.Web, :model
   
   # https://github.com/elixir-ecto/ecto/issues/840
+  # when preload size, it comes with ecto meta field
+  # to solve it, We define what fields should be parse to a map.
   @derive {Poison.Encoder, only: [:id, :name, :quantity, :price]}
   schema "sizes" do
     field :name, :string

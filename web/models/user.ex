@@ -1,10 +1,10 @@
 defmodule Bzaar.User do
   use Bzaar.Web, :model
-  alias Bzaar.{Repo, User}
+  alias Bzaar.{ Repo, User, Store, ItemCart, UserAddress, CreditCard }
 
+  import Ecto.Query
   #https://github.com/elixir-ecto/ecto/issues/840
-  @derive {Poison.Encoder, only: [:id, :name, :surname, :email, :active, :shopkeeper]}
-
+  @derive { Poison.Encoder, only: [:id, :name, :surname, :email, :active, :shopkeeper, :address] }
   schema "users" do
     field :name, :string
     field :surname, :string
@@ -15,9 +15,10 @@ defmodule Bzaar.User do
     field :password_hash, :string
     field :facebook_id, :string
     field :shopkeeper, :boolean, default: false
-    has_many :stores, Bzaar.Store
-    has_many :item_cart, Bzaar.ItemCart
-    has_one :credit_card, Bzaar.CreditCard
+    has_many :stores, Store
+    has_many :item_cart, ItemCart
+    has_many :address, UserAddress
+    has_one :credit_card, CreditCard
 
     timestamps(type: :utc_datetime)
   end
@@ -66,7 +67,9 @@ defmodule Bzaar.User do
   end
 
   def find_and_confirm_password(email, password) do
-    user = Repo.get_by(User, email: String.downcase(email))
+    user = from(User)
+    |> preload([:address])
+    |> Repo.get_by(email: String.downcase(email))
     cond do
       is_nil(user) -> {:error, "Invalid e-mail!"}
       !Comeonin.Bcrypt.checkpw(password, user.password_hash) -> {:error, "Invalid password"}
