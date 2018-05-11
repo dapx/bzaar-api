@@ -5,7 +5,7 @@ defmodule Bzaar.UserAddress do
   # when preload user_address, it comes with ecto meta field
   # to solve it, We define what fields should be parse to a map.
   @derive { Poison.Encoder, only: [
-      :id, :name, :uf, :city, :neighborhood, :street, :number, :complement
+      :id, :name, :cep, :uf, :city, :neighborhood, :street, :number, :complement
     ]}
   schema "user_address" do
     field :name, :string
@@ -26,7 +26,8 @@ defmodule Bzaar.UserAddress do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :cep, :uf, :city, :neighborhood, :street, :number, :complement, :user_id])
-    |> validate_required([:name, :cep, :uf, :city, :neighborhood, :street, :number, :complement, :user_id])
+    |> cast(params, [:name, :cep, :uf, :city, :neighborhood, :street, :number, :complement])
+    |> assoc_constraint(:user)
+    |> validate_required([:name, :cep, :uf, :city, :neighborhood, :street, :number, :complement])
   end
 end

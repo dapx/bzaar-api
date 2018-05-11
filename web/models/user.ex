@@ -17,7 +17,7 @@ defmodule Bzaar.User do
     field :shopkeeper, :boolean, default: false
     has_many :stores, Store
     has_many :item_cart, ItemCart
-    has_many :address, UserAddress
+    has_many :address, UserAddress, on_delete: :delete_all, on_replace: :delete
     has_one :credit_card, CreditCard
 
     timestamps(type: :utc_datetime)
@@ -28,16 +28,18 @@ defmodule Bzaar.User do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name, :surname, :email, :active, :image, :password, :facebook_id, :shopkeeper])
-    |> validate_required([:name, :surname, :email, :active, :password])
+    |> cast(params, [:name, :surname, :active, :image, :facebook_id, :shopkeeper])
+    |> cast_assoc(:address, required: false)
+    |> validate_required([:name, :surname, :active])
     |> unique_constraint(:email)
   end
 
   def registration_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params)
+    |> cast(params, ~w(password email), [])
     |> downcase_email
-    |> cast(params, ~w(password), [])
+    |> validate_required(~w(password email))
     |> validate_length(:password, min: 6)
     |> put_password_hash()
   end

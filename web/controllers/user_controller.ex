@@ -67,7 +67,8 @@ defmodule Bzaar.UserController do
 
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Repo.get!(User, id)
-    changeset = User.registration_changeset(user, user_params)
+    |> Repo.preload([:address])
+    changeset = User.changeset(user, user_params)
 
     case Repo.update(changeset) do
       {:ok, user} ->

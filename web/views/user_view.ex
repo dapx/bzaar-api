@@ -21,7 +21,8 @@ defmodule Bzaar.UserView do
       active: user.active,
       image: user.image,
       password: user.password,
-      shopkeeper: user.shopkeeper
+      shopkeeper: user.shopkeeper,
+      address: user.address,
     }
   end
 end
