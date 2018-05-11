@@ -61,7 +61,7 @@ defmodule Bzaar.Router do
         resources "/dispatchers", DispatcherController, except: [:delete]
       end
 
-      resources "/users", UserController, only: [] do
+      resources "/users", UserController, only: [:show, :update] do
         resources "/address", UserAddressController
       end
 
