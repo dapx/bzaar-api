@@ -4,6 +4,22 @@ defmodule Bzaar.UserController do
   alias Bzaar.User
   import Facebook
 
+  plug :validate_nested_resource when action in [:update, :confirm_email]
+
+  def validate_nested_resource(conn, _) do
+    with %User{ id: user_id } <- Guardian.Plug.current_resource(conn),
+         conn_user_id <- String.to_integer(conn.params["user_id"]),
+         true <- user_id == conn_user_id
+    do
+      conn
+    else
+      _ -> conn
+        |> put_status(403)
+        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
+        |> halt
+    end
+  end
+
   def index(conn, _params) do
     users = Repo.all(User)
     render(conn, "index.json", users: users)
@@ -57,11 +73,13 @@ defmodule Bzaar.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Repo.get!(User, id)
+    |> Repo.preload([:address])
     render(conn, "show.json", user: user)
   end
 
   def show(conn, %{"email" => email}) do
     user = Repo.get!(User, where: email)
+    |> Repo.preload([:address])
     render(conn, "show.json", user: user)
   end
 
@@ -102,6 +120,14 @@ defmodule Bzaar.UserController do
     conn
     |> put_status(401)
     |> render(Bzaar.ErrorView, "error.json", error: "The verification link is invalid.")
+  end
+
+  def confirm_email(conn, %{ "user_id" => id }) do
+    user = Repo.get!(User, id)
+    Bzaar.Token.generate_new_account_token(user)
+    |> Bzaar.Email.confirmation_email(user)
+    |> Bzaar.Mailer.deliver_later
+    send_resp(conn, :no_content, "")
   end
 
   def delete(conn, %{"id" => id}) do

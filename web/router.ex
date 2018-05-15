@@ -63,6 +63,7 @@ defmodule Bzaar.Router do
 
       resources "/users", UserController, only: [:show, :update] do
         resources "/address", UserAddressController
+        post "/send_confirmation", UserController, :confirm_email
       end
 
       get "/my_stores", StoreController, :list
