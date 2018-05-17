@@ -23,6 +23,7 @@ defmodule Bzaar.StoreItemCartView do
       product_price: store_item_cart.size_price,
       quantity: store_item_cart.quantity,
       status: store_item_cart.status,
+      address: store_item_cart.address,
       updated_at: store_item_cart.updated_at,
       inserted_at: store_item_cart.inserted_at
     }
@@ -40,6 +41,7 @@ defmodule Bzaar.StoreItemCartView do
       product_name: store_item_cart.size.product.name,
       product_price: store_item_cart.size.price,
       product_image: url,
+      address: store_item_cart.address,
       updated_at: store_item_cart.updated_at,
       inserted_at: store_item_cart.inserted_at
     }

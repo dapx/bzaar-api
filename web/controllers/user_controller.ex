@@ -4,20 +4,32 @@ defmodule Bzaar.UserController do
   alias Bzaar.User
   import Facebook
 
-  plug :validate_nested_resource when action in [:update, :confirm_email]
+  plug :validate_resource when action in [:update]
+
+  def validate_resource(conn, _) do
+    validate_resource_by_param(conn, conn.params["id"])
+  end
 
   def validate_nested_resource(conn, _) do
+    validate_resource_by_param(conn, conn.params["user_id"])
+  end
+
+  defp validate_resource_by_param(conn, parameter) do
     with %User{ id: user_id } <- Guardian.Plug.current_resource(conn),
-         conn_user_id <- String.to_integer(conn.params["user_id"]),
+         conn_user_id <- String.to_integer(parameter),
          true <- user_id == conn_user_id
     do
       conn
     else
-      _ -> conn
-        |> put_status(403)
-        |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
-        |> halt
+      _ -> show_error(conn, "User doesn't have this resource associated")
     end
+  end
+
+  defp show_error(conn, error) do
+    conn
+    |> put_status(403)
+    |> render(Bzaar.ErrorView, "error.json", error: error)
+    |> halt # Used to prevend Plug.Conn.AlreadySentError
   end
 
   def index(conn, _params) do

@@ -36,6 +36,7 @@ defmodule Bzaar.ItemCartController do
     item_cart = Repo.all(from i in ItemCart,
         where: i.user_id == ^user.id,
         preload: [
+          :address,
           :size, {:size, [:product, {:product, [:images]}]}
         ])
     render(conn, "index_product.json", item_cart: item_cart)
@@ -88,7 +89,7 @@ defmodule Bzaar.ItemCartController do
   def show(conn, %{"id" => id}) do
     item_cart =
       from(ItemCart)
-        |> preload([:size, {:size, [:product, {:product, [:images]}]}])
+        |> preload([:address, :size, {:size, [:product, {:product, [:images]}]}])
         |> Repo.get!(id)
     render(conn, "show.json", item_cart: item_cart)
   end
@@ -96,7 +97,7 @@ defmodule Bzaar.ItemCartController do
   def update(conn, %{"id" => id, "item_cart" => item_cart_params}) do
     item_cart = Repo.get!(ItemCart, id)
       |> Repo.preload([
-          :user, :size, {:size, [
+          :user, :address, :size, {:size, [
             :product, {:product, [
               :images, :store, {:store, [
                 :user
