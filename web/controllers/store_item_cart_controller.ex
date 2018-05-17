@@ -48,6 +48,7 @@ defmodule Bzaar.StoreItemCartController do
       join: s in Store, on: s.id == p.store_id,
       preload: [
         :user,
+        :address,
         :size, {:size, [:product, {:product, [:images]}]}
       ],
       where: p.store_id == ^store_id
@@ -79,7 +80,7 @@ defmodule Bzaar.StoreItemCartController do
   def show(conn, %{"id" => id}) do
     item_cart =
       from(ItemCart)
-        |> preload([:size, {:size, [:product, {:product, [:images]}]}])
+        |> preload([:address, :size, {:size, [:product, {:product, [:images]}]}])
         |> Repo.get!(id)
     render(conn, Bzaar.StoreItemCartView, "show.json", store_item_cart: item_cart)
   end
@@ -87,7 +88,7 @@ defmodule Bzaar.StoreItemCartController do
   def update(conn, %{"id" => id, "item_cart" => item_cart_params}) do
     item_cart = Repo.one!(from i in ItemCart,
       preload: [
-        :user, :size, {:size, [
+        :user, :address, :size, {:size, [
           :product, {:product, [
             :images, :store, {:store, [
               :user

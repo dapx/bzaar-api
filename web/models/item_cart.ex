@@ -10,6 +10,7 @@ defmodule Bzaar.ItemCart do
     field :size_price, :float
     belongs_to :user, Bzaar.User
     belongs_to :size, Bzaar.Size
+    has_one :address, Bzaar.DeliveryAddress, on_delete: :delete_all, on_replace: :delete
 
     timestamps(type: :utc_datetime)
   end
@@ -24,6 +25,7 @@ defmodule Bzaar.ItemCart do
         :size_id, :size_name, :size_price,
         :product_name, :product_image
       ])
+    |> cast_assoc(:address, required: false)
     |> validate_required([
         :quantity, :status, :user_id,
         :size_id, :size_name, :size_price,
