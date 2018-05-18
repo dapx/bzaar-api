@@ -19,8 +19,9 @@ defmodule Bzaar.StoreItemCartController do
         |> put_status(403)
         |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
         |> halt # Used to prevend Plug.Conn.AlreadySentError
-      { %ItemCart{ status: status }, new_status }
-        when (status + 1) == new_status or (status - 1) == 0
+      { %ItemCart{ status: status }, new_status } 
+        when (status + 1) == new_status # When newStatus is the next sequence number
+          or ((status - 1) == new_status and new_status == 0) # or newStatus is to cancel a confirmed status
          -> conn
       _ -> conn
         |> put_status(403)
@@ -98,7 +99,7 @@ defmodule Bzaar.StoreItemCartController do
       ],
       where: i.id == ^id
     )
-    changeset = ItemCart.changeset(item_cart, item_cart_params)
+    changeset = ItemCart.store_changeset(item_cart, item_cart_params)
 
     case Repo.update(changeset) do
       {:ok, item_cart} ->
