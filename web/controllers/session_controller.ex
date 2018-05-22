@@ -16,7 +16,7 @@ defmodule Bzaar.SessionController do
         |> put_status(202)
         |> put_resp_header("authorization", "Bearer #{jwt}")
         |> put_resp_header("x-expires", "%{exp}")
-        |> render(Bzaar.SessionView, "show.json", %{ session: %{ user: user, jwt: jwt, exp: exp } })
+        |> render(Bzaar.SessionView, "show.json", %{session: %{user: user, jwt: jwt, exp: exp}})
 
         {:error, error} ->
         conn
@@ -26,34 +26,16 @@ defmodule Bzaar.SessionController do
   end
 
   def signin_facebook(conn, %{"access_token" => access_token}) do
-    case Facebook.me("id,first_name,last_name,email,age_range,verified", access_token) do
-      {:ok, facebook_user} ->
-        case User.find_user_by_facebook_user_id(facebook_user["id"]) do
-          {:ok, user} ->
-            {new_conn, credentials} = authenticate(conn, user)
-  
-            new_conn
-            |> put_status(202)
-            # |> put_resp_header("authorization", "Bearer #{jwt}")
-            # |> put_resp_header("x-expires", "%{exp}")
-            |> render("login.json", credentials)
-
-          {:error, _} ->
-            new_params = generate_facebook_user(facebook_user)
-            changeset = User.facebook_changeset(%User{}, new_params)
-            case Repo.insert(changeset) do
-              {:ok, user} ->
-                {new_conn, credentials} = authenticate(conn, user)
-
-                new_conn
-                |> put_status(202)
-                |> render("login.json", credentials)
-              {:error, changeset} ->
-                conn
-                |> put_status(:unprocessable_entity)
-                |> render(Bzaar.ChangesetView, "error.json", changeset: changeset)
-            end
-        end
+    with {:ok, facebook_user} <- Facebook.me("id,first_name,last_name,email,age_range,verified", access_token),
+         {:ok, user} <- User.find_or_register_facebook_user(facebook_user),
+         {new_conn, credentials} = authenticate(conn, user)
+    do
+      new_conn
+      |> put_status(202)
+      # |> put_resp_header("authorization", "Bearer #{jwt}")
+      # |> put_resp_header("x-expires", "%{exp}")
+      |> render(Bzaar.SessionView, "show.json", %{session: credentials})
+    else
       {:error, error} ->
         conn
         |> put_status(503)
@@ -72,29 +54,18 @@ defmodule Bzaar.SessionController do
     {new_conn, credentials}
   end
 
-  defp generate_facebook_user(user) do
-    %{
-      facebook_id: user["id"],
-      name: user["first_name"],
-      surname: user["last_name"],
-      email: user["email"],
-      active: user["verified"],
-      password: :crypto.strong_rand_bytes(32) |> Base.encode64 |> binary_part(0, 32)
-    }
-  end
-
   def unauthenticated(conn, _params) do
     conn
     |> put_flash(:info, "You must be signed in to access this page")
     |> put_status(:forbidden)
-    |> render(Bzaar.ErrorView, "error.json", %{ error: "unauthenticated"})
+    |> render(Bzaar.ErrorView, "error.json", %{error: "unauthenticated"})
   end
 
   def unauthorized(conn, _params) do
     conn
     |> put_flash(:error, "You must be signed in to access this page")
     |> put_status(:unauthorized)
-    |> render(Bzaar.ErrorView, "error.json", %{ error: "unauthorized"})
+    |> render(Bzaar.ErrorView, "error.json", %{error: "unauthorized"})
   end
 
 end
