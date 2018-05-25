@@ -48,6 +48,7 @@ defmodule Bzaar.Mixfile do
      {:ex_machina, "~> 2.1", only: :test},
      {:bamboo, "~> 0.8"},
      {:bamboo_smtp, "~> 1.4.0"},
+     {:credo, "~> 0.9.1", only: [:dev, :test], runtime: false},
     ]
   end
 
