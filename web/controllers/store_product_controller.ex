@@ -1,7 +1,7 @@
 defmodule Bzaar.StoreProductController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.{ Product, Store, Size, ProductImage }
+  alias Bzaar.{Product, Store, Size, ProductImage}
   alias Bzaar.S3Uploader
   import Ecto.Query
 
@@ -53,20 +53,18 @@ defmodule Bzaar.StoreProductController do
 
   def show(conn, %{"id" => id}) do
     images_query = from i in ProductImage, order_by: i.sequence
-    product =
-      from(Product)
-        |> preload([
-            :sizes,
-            images: ^images_query
-          ])
-        |> Repo.get!(id)
+    product = Product
+      |> from()
+      |> preload([:sizes, images: ^images_query])
+      |> Repo.get!(id)
     render(conn, "show.json", product: product)
   end
 
   def update(conn, %{"id" => id, "product" => product_params}) do
-    product = from(Product)
-        |> preload([:images, :sizes])
-        |> Repo.get!(id)
+    product = Product
+      |> from()
+      |> preload([:images, :sizes])
+      |> Repo.get!(id)
     changeset = Product.changeset(product, product_params)
 
     case Repo.update(changeset) do

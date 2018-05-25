@@ -30,7 +30,7 @@ defmodule Bzaar.StoreItemCartView do
   end
 
   def render("item.json", %{store_item_cart: store_item_cart}) do
-    [%{ url: url }|tail] = store_item_cart.size.product.images
+    [%{url: url}|tail] = store_item_cart.size.product.images
     %{id: store_item_cart.id,
       user_id: store_item_cart.user_id,
       user_name: store_item_cart.user.name,

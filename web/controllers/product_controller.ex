@@ -1,7 +1,7 @@
 defmodule Bzaar.ProductController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.{ Product, ProductImage }
+  alias Bzaar.{Product, ProductImage}
   import Ecto.Query
 
   def index(conn, _params) do
@@ -15,13 +15,10 @@ defmodule Bzaar.ProductController do
 
   def show(conn, %{"id" => id}) do
     images_query = from i in ProductImage, order_by: i.sequence
-    product =
-      from(Product)
-        |> preload([
-            :sizes,
-            images: ^images_query
-          ])
-        |> Repo.get!(id)
+    product = Product
+      |> from()
+      |> preload([:sizes, images: ^images_query])
+      |> Repo.get!(id)
     render(conn, "show.json", product: product)
   end
 

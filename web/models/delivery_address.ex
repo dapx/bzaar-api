@@ -1,7 +1,7 @@
 defmodule Bzaar.DeliveryAddress do
   use Bzaar.Web, :model
 
-  @derive { Poison.Encoder, only: [
+  @derive {Poison.Encoder, only: [
     :id, :name, :cep, :uf, :city, :neighborhood, :street, :number, :complement
   ]}
   schema "delivery_address" do

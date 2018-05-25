@@ -1,13 +1,13 @@
 defmodule Bzaar.UserAddressController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.{ User, UserAddress }
+  alias Bzaar.{User, UserAddress}
 
   plug :validate_nested_resource when action in [:create, :edit, :upload, :delete, :index]
 
   def validate_nested_resource(conn, _) do
-    with %User{ id: user_id } <- Guardian.Plug.current_resource(conn),
-         %{ "user_id" => param_user_id } <- conn.params,
+    with %User{id: user_id} <- Guardian.Plug.current_resource(conn),
+         %{"user_id" => param_user_id} <- conn.params,
          true <- String.to_integer(param_user_id) == user_id
     do
       conn
@@ -26,7 +26,7 @@ defmodule Bzaar.UserAddressController do
 
   def create(conn, %{"user_id" => user_id, "user_address" => user_address_params}) do
     with user_id <- String.to_integer(user_id),
-         changeset <- UserAddress.changeset(%UserAddress{ user_id: user_id }, user_address_params),
+         changeset <- UserAddress.changeset(%UserAddress{user_id: user_id}, user_address_params),
          {:ok, user_address} <- Repo.insert(changeset)
     do
       conn

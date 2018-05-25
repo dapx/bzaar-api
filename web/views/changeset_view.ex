@@ -20,9 +20,10 @@ defmodule Bzaar.ChangesetView do
   end
 
   defp error_string_from_changeset(changeset) do
-    Enum.map(changeset.errors, fn {k, v} ->
+    changeset.errors
+    |> Enum.map(fn {k, v} ->
        "#{Phoenix.Naming.humanize(k)} #{translate_error(v)}"
-    end) |> Enum.join(". ")
+    end)
+    |> Enum.join(". ")
   end
-
 end

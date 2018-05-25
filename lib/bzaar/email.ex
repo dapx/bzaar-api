@@ -1,7 +1,7 @@
 defmodule Bzaar.Email do
   import Bamboo.Email
   import Bamboo.Phoenix
-  alias Bzaar.{ User, ItemCart }
+  alias Bzaar.{User, ItemCart}
 
   @welcome_html """
   <strong>Estamos muito felizes por ter você aqui pertinho de nós</strong><br />
@@ -13,7 +13,7 @@ defmodule Bzaar.Email do
   @welcome_text "Bem vindo/a!"
   @bzaar_email "admin@bzaar.com.br"
 
-  def welcome_email(%User{ name: name, email: email }) do
+  def welcome_email(%User{name: name, email: email}) do
     base_email()
     |> to(email)
     |> subject("#{name}, Seja bem vindo/a!!!")
@@ -21,7 +21,7 @@ defmodule Bzaar.Email do
     |> html_body(@welcome_html)
   end
 
-  def confirmation_email(token, %User{ name: name, email: email }) do
+  def confirmation_email(token, %User{name: name, email: email}) do
     base_email()
     |> to(email)
     |> subject("Confirmação de e-mail")
