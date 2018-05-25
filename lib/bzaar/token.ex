@@ -5,7 +5,7 @@ defmodule Bzaar.Token do
 
   alias Bzaar.User
 
-  def generate_new_account_token(%User{ id: user_id }) do
+  def generate_new_account_token(%User{id: user_id}) do
     Phoenix.Token.sign(Bzaar.Endpoint, get_salt(), user_id)
   end
 

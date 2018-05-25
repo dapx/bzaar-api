@@ -33,7 +33,7 @@ defmodule Bzaar.StoreController do
 
   def create(conn, %{"store" => store_params}) do
     user = Guardian.Plug.current_resource(conn)
-    changeset = Store.changeset(%Store{ user_id: user.id }, store_params)
+    changeset = Store.changeset(%Store{user_id: user.id}, store_params)
     
     case Repo.insert(changeset) do
       {:ok, store} ->

@@ -1,16 +1,18 @@
 defmodule Bzaar.User do
   use Bzaar.Web, :model
-  alias Bzaar.{ Repo, User, Store, ItemCart, UserAddress, CreditCard }
+  alias Bzaar.{Repo, User, Store, ItemCart, UserAddress, CreditCard}
+
+  @default_image "https://image.freepik.com/icones-gratis/perfil-macho-utilizador-sombra_318-40244.jpg"
 
   import Ecto.Query
   #https://github.com/elixir-ecto/ecto/issues/840
-  @derive { Poison.Encoder, only: [:id, :name, :surname, :email, :active, :shopkeeper, :address] }
+  @derive {Poison.Encoder, only: [:id, :name, :surname, :email, :active, :shopkeeper, :address]}
   schema "users" do
     field :name, :string
     field :surname, :string
     field :email, :string
     field :active, :boolean, default: false
-    field :image, :string, default: "https://image.freepik.com/icones-gratis/perfil-macho-utilizador-sombra_318-40244.jpg"
+    field :image, :string, default: @default_image
     field :password, :string, virtual: true
     field :password_hash, :string
     field :facebook_id, :string
@@ -69,7 +71,8 @@ defmodule Bzaar.User do
   end
 
   def find_and_confirm_password(email, password) do
-    user = from(User)
+    user = User
+    |> from()
     |> preload([:address])
     |> Repo.get_by(email: String.downcase(email))
     cond do
@@ -79,11 +82,35 @@ defmodule Bzaar.User do
     end
   end
 
-  def find_user_by_facebook_user_id(user_id) do
-    user = Repo.get_by(User, facebook_id: user_id)
-    cond do
-      is_nil(user) -> {:error, "User id not found!"}
-      true -> {:ok, user}
+  defp generate_facebook_user(user) do
+    password = 32
+    |> :crypto.strong_rand_bytes()
+    |> Base.encode64
+    |> binary_part(0, 32)
+    %{
+      facebook_id: user["id"],
+      name: user["first_name"],
+      surname: user["last_name"],
+      email: user["email"],
+      active: user["verified"],
+      password: password
+    }
+  end
+
+  def find_or_register_facebook_user(facebook_user) do
+    %{"id" => user_id} = facebook_user
+    user_by_facebook = User
+    |> from()
+    |> preload([:address])
+    |> Repo.get_by(facebook_id: user_id)
+    case user_by_facebook do
+      nil ->
+        params = facebook_user
+        |> generate_facebook_user()
+        %User{}
+        |> User.facebook_changeset(params)
+        |> Repo.insert!()
+      user -> {:ok, user}
     end
   end
 end

@@ -6,10 +6,10 @@ defmodule Bzaar.ItemCartController do
   plug :validate_nested_resource when action in [:update]
 
   def validate_nested_resource(conn, _) do
-    with %User{ active: active } = user when active != false <- Guardian.Plug.current_resource(conn),
-         %{ "item_cart" => new_item } when not is_nil(new_item) <- (conn.params), # Get future state
-         %{ "id" => item_id, "status" => new_status } <- new_item, # Get item id and new status
-         %ItemCart{ status: old_status } <- Repo.get_by!(ItemCart, [id: item_id, user_id: user.id])
+    with %User{active: active} = user when active != false <- Guardian.Plug.current_resource(conn),
+         %{"item_cart" => new_item} when not is_nil(new_item) <- (conn.params), # Get future state
+         %{"id" => item_id, "status" => new_status} <- new_item, # Get item id and new status
+         %ItemCart{status: old_status} <- Repo.get_by!(ItemCart, [id: item_id, user_id: user.id])
     do
       cond do
         (old_status == 3 and new_status == 4) or # Allow to change to received product
@@ -21,7 +21,7 @@ defmodule Bzaar.ItemCartController do
         true -> conn # else allow all
       end
     else
-      %User{ active: false } ->
+      %User{active: false} ->
         conn
         |> show_error("Você precisa confirmar seu e-mail")
       nil -> conn
@@ -54,7 +54,7 @@ defmodule Bzaar.ItemCartController do
   end
 
   defp get_size_fields(size) do
-    [%{ url: url }| tail] = size.product.images
+    [%{url: url}| tail] = size.product.images
     %{
       "size_name" => size.name,
       "product_name" => size.product.name,
@@ -65,16 +65,17 @@ defmodule Bzaar.ItemCartController do
 
   def create(conn, %{"item_cart" => item_cart_params}) do
     user = Guardian.Plug.current_resource(conn)
-    params = %{item_cart_params | "status" => 0 }
+    params = %{item_cart_params | "status" => 0}
     size = load_size(params)
     size_params = get_size_fields(size)
     item_cart_params = Map.merge(params, size_params)
-    item = build_assoc(user, :item_cart)
-      |> ItemCart.changeset(item_cart_params)
+    item = user
+      |> build_assoc(:item_cart)
+      |> ItemCart.cast_address_changeset(item_cart_params)
       |> Repo.insert
-
     case item do
       {:ok, item_cart} ->
+        item_cart = Repo.preload(item_cart, :address)
         conn
         |> put_status(:created)
         |> put_resp_header("location", item_cart_path(conn, :show, item_cart))
@@ -87,15 +88,16 @@ defmodule Bzaar.ItemCartController do
   end
 
   def show(conn, %{"id" => id}) do
-    item_cart =
-      from(ItemCart)
+    item_cart = ItemCart
+        |> from()
         |> preload([:address, :size, {:size, [:product, {:product, [:images]}]}])
         |> Repo.get!(id)
     render(conn, "show.json", item_cart: item_cart)
   end
 
   def update(conn, %{"id" => id, "item_cart" => item_cart_params}) do
-    item_cart = Repo.get!(ItemCart, id)
+    item_cart = ItemCart
+      |> Repo.get!(id)
       |> Repo.preload([
           :user, :address, :size, {:size, [
             :product, {:product, [
@@ -105,12 +107,12 @@ defmodule Bzaar.ItemCartController do
             ]}
           ]}
         ])
-    changeset = ItemCart.changeset(item_cart, item_cart_params)
+    changeset = ItemCart.cast_address_changeset(item_cart, item_cart_params)
 
     case Repo.update(changeset) do
       {:ok, item_cart} ->
-        if (item_cart.status == 1) do
-          Bzaar.Email.notify_new_order(item_cart) |> Bzaar.Mailer.deliver_later
+        if item_cart.status == 1 do
+          item_cart |> Bzaar.Email.notify_new_order() |> Bzaar.Mailer.deliver_later
         end
         render(conn, "show.json", item_cart: item_cart)
       {:error, changeset} ->
@@ -132,7 +134,7 @@ defmodule Bzaar.ItemCartController do
       _ ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a order already processed");
+        |> render(Bzaar.ErrorView, "error.json", error: "You can't remove a order already processed")
     end
   end
 

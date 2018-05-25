@@ -25,11 +25,26 @@ defmodule Bzaar.ItemCart do
         :size_id, :size_name, :size_price,
         :product_name, :product_image
       ])
-    |> cast_assoc(:address, required: false)
     |> validate_required([
         :quantity, :status, :user_id,
         :size_id, :size_name, :size_price,
         :product_name, :product_image
       ])
+  end
+
+  def cast_address_changeset(struct, params \\ %{}) do
+    struct
+    |> changeset(params)
+    |> cast_assoc(:address, required: false)
+  end
+
+  @doc """
+  Builds a changeset based on the `struct` and `params`.
+  A store can only change the status
+  """
+  def store_changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:status])
+    |> validate_required([:status])
   end
 end

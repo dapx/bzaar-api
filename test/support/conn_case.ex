@@ -52,8 +52,7 @@ defmodule Bzaar.ConnCase do
       user = insert(:user)
       {:ok, conn: TestHelpers.api_sign_in(conn, user), user: user}
     else
-      {:ok, conn: Phoenix.ConnTest.build_conn() }
+      {:ok, conn: Phoenix.ConnTest.build_conn()}
     end
-    
   end
 end
