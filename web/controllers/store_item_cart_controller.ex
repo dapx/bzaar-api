@@ -7,21 +7,21 @@ defmodule Bzaar.StoreItemCartController do
 
   def validate_nested_resource(conn, _) do
     user = Guardian.Plug.current_resource(conn)
-    %{ "item_cart" => new_item, "id" => item_id }= conn.params
+    %{"item_cart" => new_item, "id" => item_id} = conn.params
     new_status = new_item["status"]
     item_cart = get_item_by_id_and_user(item_id, user.id)
     validate_update_action(conn, item_cart, new_status)
   end
 
   defp validate_update_action(conn, item_cart, new_status) do
-    case { item_cart, new_status } do
-      { nil, _ } -> conn
+    case {item_cart, new_status} do
+      {nil, _} -> conn
         |> put_status(403)
         |> render(Bzaar.ErrorView, "error.json", error: "User doesn't have this resource associated")
         |> halt # Used to prevend Plug.Conn.AlreadySentError
-      { %ItemCart{ status: status }, new_status } 
+      {%ItemCart{status: status}, new_status}
         when (status + 1) == new_status # When newStatus is the next sequence number
-          or ((status - 1) == new_status and new_status == 0) # or newStatus is to cancel a confirmed status
+          or (status == 1 and new_status == 5) # or newStatus is to cancel a confirmed status
          -> conn
       _ -> conn
         |> put_status(403)
@@ -69,7 +69,7 @@ defmodule Bzaar.StoreItemCartController do
   end
 
   defp get_size_fields(size) do
-    [%{ url: url }| tail] = size.product.images
+    [%{url: url}| tail] = size.product.images
     %{
       "size_name" => size.name,
       "product_name" => size.product.name,
@@ -79,10 +79,10 @@ defmodule Bzaar.StoreItemCartController do
   end
 
   def show(conn, %{"id" => id}) do
-    item_cart =
-      from(ItemCart)
-        |> preload([:address, :size, {:size, [:product, {:product, [:images]}]}])
-        |> Repo.get!(id)
+    item_cart = ItemCart
+      |> from()
+      |> preload([:address, :size, {:size, [:product, {:product, [:images]}]}])
+      |> Repo.get!(id)
     render(conn, Bzaar.StoreItemCartView, "show.json", store_item_cart: item_cart)
   end
 
