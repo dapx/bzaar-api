@@ -53,9 +53,10 @@ defmodule Bzaar.User do
   def facebook_changeset(struct, params \\ %{}) do
     struct
     |> changeset(params)
-    |> cast(params, ~w(facebook_id), [])
+    |> cast(params, ~w(facebook_id password email), [])
     |> unique_constraint(:facebook_id)
     |> put_password_hash()
+    |> validate_required([:facebook_id, :password_hash, :email])
   end
 
   defp put_password_hash(changeset) do
@@ -82,18 +83,21 @@ defmodule Bzaar.User do
     end
   end
 
-  defp generate_facebook_user(user) do
-    password = 32
+  defp generate_random_password do
+    32
     |> :crypto.strong_rand_bytes()
-    |> Base.encode64
+    |> Base.encode64()
     |> binary_part(0, 32)
+  end
+
+  defp generate_facebook_user(user) do
     %{
       facebook_id: user["id"],
       name: user["first_name"],
       surname: user["last_name"],
       email: user["email"],
       active: user["verified"],
-      password: password
+      password: generate_random_password()
     }
   end
 
@@ -107,10 +111,19 @@ defmodule Bzaar.User do
       nil ->
         params = facebook_user
         |> generate_facebook_user()
-        %User{}
-        |> User.facebook_changeset(params)
-        |> Repo.insert!()
-      user -> {:ok, user}
+        |> insert_preload_address()
+      user ->
+        user
+        |> Repo.preload(:address)
+        {:ok, user}
     end
+  end
+
+  defp insert_preload_address(params) do
+    user = %User{}
+      |> User.facebook_changeset(params)
+      |> Repo.insert!()
+      |> Repo.preload(:address)
+    {:ok, user}
   end
 end
