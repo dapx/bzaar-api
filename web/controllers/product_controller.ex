@@ -1,13 +1,14 @@
 defmodule Bzaar.ProductController do
   use Bzaar.Web, :controller
 
-  alias Bzaar.{Product, ProductImage}
+  alias Bzaar.{Product, ProductImage, Size}
   import Ecto.Query
 
   def index(conn, _params) do
     images_query = from i in ProductImage, order_by: i.sequence
+    sizes_query = from s in Size, order_by: [asc: s.price]
     products = Repo.all(from p in Product, preload: [
-        :sizes,
+        sizes: ^sizes_query,
         images: ^images_query
       ])
     render(conn, "index.json", products: products)

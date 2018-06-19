@@ -23,11 +23,12 @@ defmodule Bzaar.StoreProductController do
 
   def index(conn, _params) do
     store_id = conn.params["store_id"]
+    sizes_query = from s in Size, order_by: [asc: s.price]
     images_query = from i in ProductImage, order_by: i.sequence
     products = Repo.all(from p in Product,
       where: p.store_id == ^store_id,
       preload: [
-        :sizes,
+        sizes: ^sizes_query,
         images: ^images_query
       ])
     render(conn, "index.json", products: products)
