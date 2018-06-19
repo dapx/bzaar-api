@@ -11,6 +11,7 @@ defmodule Bzaar.Store do
     belongs_to :user, Bzaar.User
     has_many :products, Bzaar.Product
     has_many :dispatchers, Bzaar.Dispatcher
+    has_one :store_address, Bzaar.StoreAddress
 
     timestamps(type: :utc_datetime)
   end
