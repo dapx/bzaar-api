@@ -12,8 +12,8 @@ defmodule Bzaar.ProductController do
         sizes: ^sizes_query,
         images: ^images_query
       ],
-      where: like(p.name, ^"%#{search}%") or
-             like(p.description, ^"%#{search}%")
+      where: ilike(p.name, ^"%#{search}%") or
+             ilike(p.description, ^"%#{search}%")
     )
     render(conn, "index.json", products: products)
   end
@@ -25,20 +25,6 @@ defmodule Bzaar.ProductController do
         sizes: ^sizes_query,
         images: ^images_query
       ])
-    render(conn, "index.json", products: products)
-  end
-
-  def index(conn, %{"search" => search}) do
-    images_query = from i in ProductImage, order_by: i.sequence
-    sizes_query = from s in Size, order_by: [asc: s.price]
-    products = Repo.all(
-      from p in Product, preload: [
-        sizes: ^sizes_query,
-        images: ^images_query
-      ],
-      where: like(p.name, ^"%#{search}%") or
-             like(p.description, ^"%#{search}%")
-    )
     render(conn, "index.json", products: products)
   end
 
