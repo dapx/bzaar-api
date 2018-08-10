@@ -46,7 +46,7 @@ defmodule Bzaar.UserController do
         |> Bzaar.Mailer.deliver_later
         conn
         |> put_status(:created)
-        |> render("show.json", user: user)
+        |> render("registered.json", user: user)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

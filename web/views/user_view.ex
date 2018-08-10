@@ -9,6 +9,10 @@ defmodule Bzaar.UserView do
     %{data: render_one(user, Bzaar.UserView, "user.json")}
   end
 
+  def render("registered.json", %{user: user}) do
+    %{data: render_one(user, Bzaar.UserView, "registered_user.json")}
+  end
+
   def render("verified.json", %{user: user}) do
     %{active: user.active}
   end
@@ -23,6 +27,18 @@ defmodule Bzaar.UserView do
       password: user.password,
       shopkeeper: user.shopkeeper,
       address: user.address,
+    }
+  end
+
+  def render("registered_user.json", %{user: user}) do
+    %{id: user.id,
+      name: user.name,
+      surname: user.surname,
+      email: user.email,
+      active: user.active,
+      image: user.image,
+      password: user.password,
+      shopkeeper: user.shopkeeper,
     }
   end
 end
