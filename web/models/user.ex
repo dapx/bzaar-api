@@ -41,7 +41,7 @@ defmodule Bzaar.User do
     |> changeset(params)
     |> cast(params, ~w(password email), [])
     |> downcase_email
-    |> validate_required(~w(password email))
+    |> validate_required([:password, :email])
     |> validate_length(:password, min: 6)
     |> put_password_hash()
   end
