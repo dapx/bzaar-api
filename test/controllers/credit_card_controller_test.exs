@@ -1,5 +1,5 @@
-defmodule Bzaar.CreditCardControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.CreditCardControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.CreditCard
   @valid_attrs %{active: true, cvc: "some content", expire: "some content", name: "some content", number: "120.5"}

@@ -1,4 +1,4 @@
-defmodule Bzaar.ConnCase do
+defmodule BzaarWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -32,7 +32,7 @@ defmodule Bzaar.ConnCase do
       import Bzaar.Router.Helpers
 
       # The default endpoint for testing
-      @endpoint Bzaar.Endpoint
+      @endpoint BzaarWeb.Endpoint
     end
   end
 

@@ -11,7 +11,7 @@ defmodule Bzaar do
       # Start the Ecto repository
       supervisor(Bzaar.Repo, []),
       # Start the endpoint when the application starts
-      supervisor(Bzaar.Endpoint, []),
+      supervisor(BzaarWeb.Endpoint, []),
       # Start your own worker by calling: Bzaar.Worker.start_link(arg1, arg2, arg3)
       # worker(Bzaar.Worker, [arg1, arg2, arg3]),
     ]
@@ -25,7 +25,7 @@ defmodule Bzaar do
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
   def config_change(changed, _new, removed) do
-    Bzaar.Endpoint.config_change(changed, removed)
+    BzaarWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

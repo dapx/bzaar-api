@@ -1,5 +1,5 @@
-defmodule Bzaar.ProductControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.ProductControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.Product
   @valid_attrs %{description: "some content", name: "some content", price: "120.5", quantity: 42, size: "some content"}

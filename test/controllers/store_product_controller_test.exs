@@ -1,5 +1,5 @@
-defmodule Bzaar.StoreProductControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.StoreProductControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.Product
   import Bzaar.Factory

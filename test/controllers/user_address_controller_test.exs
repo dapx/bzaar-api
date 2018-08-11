@@ -1,5 +1,5 @@
-defmodule Bzaar.UserAddressControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.UserAddressControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.UserAddress
   @valid_attrs %{cep: 42, city: "some content", complement: "some content", name: "some content", number: 42, street: "some content", uf: "some content"}
