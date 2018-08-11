@@ -50,7 +50,7 @@ defmodule Bzaar.Router do
         resources "/item_cart", StoreItemCartController, only: [:index, :update]
         post "/upload_image", StoreController, :upload
         resources "/products", StoreProductController, except: [:delete] do
-          resources "/product_images", ProductImageController, only: [:create, :update, :delete, :upload]
+          resources "/product_images", ProductImageController, only: [:create, :update, :delete]
           # Upload product images
           post "/product_images/upload", ProductImageController, :upload
 
