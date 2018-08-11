@@ -1,3 +1,3 @@
-defmodule Bzaar.PageViewTest do
-  use Bzaar.ConnCase, async: true
+defmodule BzaarWeb.PageViewTest do
+  use BzaarWeb.ConnCase, async: true
 end

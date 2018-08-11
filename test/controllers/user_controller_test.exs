@@ -1,5 +1,5 @@
-defmodule Bzaar.UserControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.UserControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.User
   alias Bzaar.TestHelpers

@@ -1,5 +1,5 @@
-defmodule Bzaar.DispatcherControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.DispatcherControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.Dispatcher
   @valid_attrs %{company: "some content", distance_limit: 42, email: "some content", time_to_deliver: 42}

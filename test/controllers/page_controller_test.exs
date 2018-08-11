@@ -1,5 +1,5 @@
-defmodule Bzaar.PageControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.PageControllerTest do
+  use BzaarWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"

@@ -1,5 +1,5 @@
-defmodule Bzaar.StoreControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.StoreControllerTest do
+  use BzaarWeb.ConnCase
   use ExUnit.Case
 
   alias Bzaar.Store
