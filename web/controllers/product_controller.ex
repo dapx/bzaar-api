@@ -15,6 +15,7 @@ defmodule Bzaar.ProductController do
       where: like(p.name, ^"%#{search}%") or
              like(p.description, ^"%#{search}%")
     )
+    products = Enum.filter(products, fn(product) -> length(product.sizes) > 0 end)
     render(conn, "index.json", products: products)
   end
 
@@ -24,7 +25,9 @@ defmodule Bzaar.ProductController do
     products = Repo.all(from p in Product, preload: [
         sizes: ^sizes_query,
         images: ^images_query
-      ])
+      ]
+    )
+    products = Enum.filter(products, fn(product) -> length(product.sizes) > 0 end)
     render(conn, "index.json", products: products)
   end
 
