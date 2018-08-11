@@ -1,4 +1,4 @@
-defmodule Bzaar.ChannelCase do
+defmodule BzaarWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -27,7 +27,7 @@ defmodule Bzaar.ChannelCase do
 
 
       # The default endpoint for testing
-      @endpoint Bzaar.Endpoint
+      @endpoint BzaarWeb.Endpoint
     end
   end
 

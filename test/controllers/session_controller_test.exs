@@ -1,5 +1,5 @@
-defmodule Bzaar.SessionControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.SessionControllerTest do
+  use BzaarWeb.ConnCase
   alias Bzaar.{User, Repo}
 
   @valid_attrs %{name: "foo", email: "foo@bar.com", surname: "bar", password: "foobar"}

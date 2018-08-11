@@ -10,10 +10,10 @@ config :bzaar,
   ecto_repos: [Bzaar.Repo]
 
 # Configures the endpoint
-config :bzaar, Bzaar.Endpoint,
+config :bzaar, BzaarWeb.Endpoint,
   url: [host: "localhost", port: 4000],
   secret_key_base: "N+o9NTFd9P6/ZarpWXPXO2fn1ieyAeaoP4u3qEzkJrJuUKabciY/FQby4fbj++1I",
-  render_errors: [view: Bzaar.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: BzaarWeb.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Bzaar.PubSub,
            adapter: Phoenix.PubSub.PG2]
 

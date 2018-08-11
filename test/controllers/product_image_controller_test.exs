@@ -1,5 +1,5 @@
-defmodule Bzaar.ProductImageControllerTest do
-  use Bzaar.ConnCase
+defmodule BzaarWeb.ProductImageControllerTest do
+  use BzaarWeb.ConnCase
 
   alias Bzaar.ProductImage
   @valid_attrs %{sequence: 42, url: "some content"}
