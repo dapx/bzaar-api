@@ -92,6 +92,22 @@ defmodule Bzaar.Email do
       """)
   end
 
+  def notify_on_product_available(item_cart) do
+    store = item_cart.size.product.store
+    base_email()
+    |> to(item_cart.user.email)
+    |> subject("""
+      Produto já está disponível, pode ir até o estabelecimento buscar.
+      """)
+    |> put_header("Reply-To", "#{store.email}")
+    |> html_body("""
+      <h2>#{item_cart.user.name}</h2>,<br />
+      <h2>A loja #{store.name} acabou de preparar o seu produto!</h2><p />
+      <h4>Produto #{item_cart.product_name} - #{item_cart.size_name} já está disponível!</h4><p />
+      Qualquer dúvida é possível responder este e-mail diretamente á loja.
+      """)
+  end
+
   def notify_new_order(item_cart) do
     store = item_cart.size.product.store
     store_owner = store.user

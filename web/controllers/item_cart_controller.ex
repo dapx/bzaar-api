@@ -5,6 +5,14 @@ defmodule Bzaar.ItemCartController do
 
   plug :validate_nested_resource when action in [:update]
 
+  @in_bag 0
+  @buy_requested 1
+  @sale_confirmed 2
+  @waiting_delivery 3
+  @delivered 4
+  @canceled 5
+  @in_loco 6
+
   def validate_nested_resource(conn, _) do
     with %User{active: active} = user when active != false <- Guardian.Plug.current_resource(conn),
          %{"item_cart" => new_item} when not is_nil(new_item) <- (conn.params), # Get future state
@@ -12,10 +20,11 @@ defmodule Bzaar.ItemCartController do
          %ItemCart{status: old_status} <- Repo.get_by!(ItemCart, [id: item_id, user_id: user.id])
     do
       cond do
-        (old_status == 3 and new_status == 4) or # Allow to change to received product
-          (old_status < 1 and new_status < 1) -> conn # Allow to confirm purchase
+        (old_status == @waiting_delivery and new_status == @delivered) or # Allow changing to received product
+          (old_status < @buy_requested and new_status < @buy_requested) or # Allow to confirm purchase
+          (old_status == @in_loco and new_status == @delivered) -> conn # Allow change to received product
 
-        new_status > 1 -> conn # Users can't modify, store owner only
+        new_status > @buy_requested -> conn # Users can't modify, store owner only
           |> show_error("Apenas o lojista pode alterar este status")
 
         true -> conn # else allow all
@@ -65,7 +74,7 @@ defmodule Bzaar.ItemCartController do
 
   def create(conn, %{"item_cart" => item_cart_params}) do
     user = Guardian.Plug.current_resource(conn)
-    params = %{item_cart_params | "status" => 0}
+    params = %{item_cart_params | "status" => @in_bag}
     size = load_size(params)
     size_params = get_size_fields(size)
     item_cart_params = Map.merge(params, size_params)
@@ -111,7 +120,7 @@ defmodule Bzaar.ItemCartController do
 
     case Repo.update(changeset) do
       {:ok, item_cart} ->
-        if item_cart.status == 1 do
+        if item_cart.status == @buy_requested do
           item_cart |> Bzaar.Email.notify_new_order() |> Bzaar.Mailer.deliver_later
         end
         render(conn, "show.json", item_cart: item_cart)
@@ -126,7 +135,7 @@ defmodule Bzaar.ItemCartController do
     item_cart = Repo.get!(ItemCart, id)
 
     case item_cart.status do
-      0 ->
+      @in_bag ->
         Repo.delete!(item_cart)
         # Here we use delete! (with a bang) because we expect
         # it to always work (and if it does not, it will raise).
