@@ -5,6 +5,14 @@ defmodule Bzaar.StoreItemCartController do
 
   plug :validate_nested_resource when action in [:update]
 
+  @in_bag 0
+  @buy_requested 1
+  @sale_confirmed 2
+  @waiting_delivery 3
+  @delivered 4
+  @canceled 5
+  @in_loco 6
+
   def validate_nested_resource(conn, _) do
     user = Guardian.Plug.current_resource(conn)
     %{"item_cart" => new_item, "id" => item_id} = conn.params
@@ -21,7 +29,8 @@ defmodule Bzaar.StoreItemCartController do
         |> halt # Used to prevend Plug.Conn.AlreadySentError
       {%ItemCart{status: status}, new_status}
         when (status + 1) == new_status # When newStatus is the next sequence number
-          or (status == 1 and new_status == 5) # or newStatus is to cancel a confirmed status
+          or (status == @buy_requested and new_status == @canceled) # or newStatus is to cancel a confirmed status
+          or (status == @buy_requested and new_status == @in_loco) # or newStatus is to confirm a sale without delivery
          -> conn
       _ -> conn
         |> put_status(403)
@@ -104,9 +113,10 @@ defmodule Bzaar.StoreItemCartController do
     case Repo.update(changeset) do
       {:ok, item_cart} ->
         notification = case item_cart.status do
-          2 -> Bzaar.Email.notify_store_confirmation(item_cart)
-          3 -> Bzaar.Email.notify_in_delivery(item_cart)
-          5 -> Bzaar.Email.notify_cancel(item_cart)
+          @sale_confirmed -> Bzaar.Email.notify_store_confirmation(item_cart)
+          @waiting_delivery -> Bzaar.Email.notify_in_delivery(item_cart)
+          @canceled -> Bzaar.Email.notify_cancel(item_cart)
+          @in_loco -> Bzaar.Email.notify_on_product_available(item_cart)
         end
         notification |> Bzaar.Mailer.deliver_later
         render(conn, "show.json", store_item_cart: item_cart)
