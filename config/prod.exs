@@ -15,7 +15,8 @@ config :bzaar, Bzaar.Endpoint,
   http: [port: {:system, "PORT"} || 4000],
   url: [scheme: "https", host: "bzaar-api.herokuapp.com", port: 443],
   cache_static_manifest: "priv/static/manifest.json",
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  # Disabled 'cause it does not work anymore.
+  # force_ssl: [rewrite_on: [:x_forwarded_proto]],
   secret_key_base: System.get_env("SECRET_KEY_BASE")
 
 # Do not print debug messages in production
