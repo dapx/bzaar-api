@@ -129,7 +129,7 @@ defmodule Bzaar.Email do
   end
 
   defp get_url do
-    case Application.get_env(:bzaar, Bzaar.Endpoint)[:url] do
+    case Application.get_env(:bzaar, BzaarWeb.Endpoint)[:url] do
       [scheme: scheme, host: host, port: 443] ->
         "#{scheme}://#{host}"
       [scheme: scheme, host: host, port: port] ->
